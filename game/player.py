@@ -25,6 +25,12 @@ class Player:
         else:
             raise RuntimeError("King doesn't exist")
 
+    def get_player_king(self):
+        return self._player_king
+
+    def get_legal_moves(self):
+        return self._legal_moves
+
     def get_active_pieces(self):
         pass
 
@@ -77,9 +83,15 @@ class Player:
             return MoveTransition(self._board, move_execute, Status.ILLEGAL_MOVE)
 
         transistion_board = move_execute.execute()
+        king_attacks = Player.calculate_attack_on_tile(transistion_board.get_current_player()
+                                                       .get_player_king().get_piece_position(),
+                                                       transistion_board.get_current_player().
+                                                       get_legal_moves())
 
+        if king_attacks:
+            return MoveTransition(self._board, move_execute, Status.LEAVES_PLAYER_IN_CHECK)
 
-
+        return MoveTransition(transistion_board, move_execute, Status.DONE)
 
 
 class WhitePlayer(Player):

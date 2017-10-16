@@ -20,6 +20,7 @@ class Board:
     black_legal_moves = list()
     white_player = None
     black_player = None
+    current_player = None
 
     def __init__(self):
         self.create_standard_game()
@@ -30,12 +31,16 @@ class Board:
         self.black_legal_moves = self.calculate_total_legal_moves(self.black_pieces)
         self.white_player = WhitePlayer(self, self.white_legal_moves, self.black_legal_moves)
         self.black_player = BlackPlayer(self, self.black_legal_moves, self.white_legal_moves)
+        self.current_player = None
 
     def get_white_player(self):
         return self.white_player
 
     def get_black_player(self):
         return self.black_player
+
+    def get_current_player(self):
+        return self.current_player
 
     @staticmethod
     def calculate_active_pieces(game_board, alliance):
