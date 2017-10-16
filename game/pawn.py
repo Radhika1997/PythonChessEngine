@@ -1,0 +1,66 @@
+from pieces import *
+from move import *
+from piece_type import Type
+
+
+class Pawn(Pieces):
+
+    def __init__(self, piece_position, piece_alliance):
+        Pieces.__init__(self, piece_position, piece_alliance, Type.PAWN)
+
+    @staticmethod
+    def __pawn_valid_moves(x, y):
+        valid_moves = list()
+        valid_moves.append((x - 1, y - 2))
+        valid_moves.append((x + 1, y - 2))
+        valid_moves.append((x + 2, y - 1))
+        valid_moves.append((x + 2, y + 1))
+        valid_moves.append((x + 1, y + 2))
+        valid_moves.append((x - 1, y + 2))
+        valid_moves.append((x - 2, y + 1))
+        valid_moves.append((x - 2, y - 1))
+        return valid_moves
+
+    def calculate_legal_moves(self, board):
+        x, y = self._calculate_coordinates()
+        legal_moves = list()
+        valid_moves = list()
+        if self._piece_alliance == Alliance.BLACK:
+            valid_moves.append((x-1, y))
+            if self.get_first_move():
+                valid_moves.append((x - 2, y))
+        else:
+            valid_moves.append((x + 1, y))
+            if self.get_first_move():
+                valid_moves.append((x + 2, y))
+
+        for i, j in valid_moves:
+            possibility = i * 8 + j
+            if 64 > possibility >= 0 and (8 > i >= 0 and 8 > j >= 0):
+
+                destination_tile = board.get_tile(possibility)
+                if destination_tile.is_tile_occupied():
+                    break
+                else:
+                    legal_moves.append(MajorMove(board, self, possibility))
+        attack_moves = list()
+        if self._piece_alliance == Alliance.BLACK:
+            attack_moves.append((x-1, y-1))
+            attack_moves.append((x - 1, y + 1))
+        else:
+            attack_moves.append((x + 1, y - 1))
+            attack_moves.append((x + 1, y + 1))
+
+        for i, j in attack_moves:
+            possibility = i * 8 + j
+            if 64 > possibility >= 0 and (8 > i >= 0 and 8 > j >= 0):
+
+                destination_tile = board.get_tile(possibility)
+                if destination_tile.is_tile_occupied():
+                    piece_on_destination = destination_tile.get_pieces()
+                    alliance = piece_on_destination.get_piece_alliance()
+
+                    if self._piece_alliance != alliance:
+                        legal_moves.append(AttackMove(board, self, possibility, piece_on_destination))
+
+        return legal_moves
