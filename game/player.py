@@ -82,16 +82,16 @@ class Player:
         if not self.is_move_legal(move_execute):
             return MoveTransition(self._board, move_execute, Status.ILLEGAL_MOVE)
 
-        transistion_board = move_execute.execute()
-        king_attacks = Player.calculate_attack_on_tile(transistion_board.get_current_player()
+        transition_board = move_execute.execute()
+        king_attacks = Player.calculate_attack_on_tile(transition_board.get_current_player()
                                                        .get_player_king().get_piece_position(),
-                                                       transistion_board.get_current_player().
+                                                       transition_board.get_current_player().
                                                        get_legal_moves())
 
         if king_attacks:
             return MoveTransition(self._board, move_execute, Status.LEAVES_PLAYER_IN_CHECK)
 
-        return MoveTransition(transistion_board, move_execute, Status.DONE)
+        return MoveTransition(transition_board, move_execute, Status.DONE)
 
 
 class WhitePlayer(Player):
