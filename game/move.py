@@ -122,19 +122,54 @@ class PawnJump(Move):
 
 class CastleMove(Move):
 
-    def __init__(self, board, moved_piece, destination_coordinate):
+    castle_rook = None
+    castle_rook_initial = None
+    castle_rook_final = None
+
+    def __init__(self, board, moved_piece, destination_coordinate,
+                 castle_rook, castle_rook_initial, castle_rook_final):
         Move.__init__(self, board, moved_piece, destination_coordinate)
+        self.castle_rook = castle_rook
+        self.castle_rook_initial = castle_rook_initial
+        self.castle_rook_final = castle_rook_final
+
+    def get_castle_rook(self):
+        return self.castle_rook
+
+    def is_castling(self):
+        return True
+
+    def execute(self):
+        new_board = Board(1)
+        for piece in self.board.get_current_player().get_active_pieces():
+            if not piece.equals(self.moved_piece) and not piece.equals(self.castle_rook):
+                new_board.set_piece(piece)
+
+        for piece in self.board.get_current_player().get_opponent().get_active_pieces():
+            new_board.set_piece(piece)
+
+        self.moved_piece.set_piece_position(self.destination_coordinate)
+        self.castle_rook.set_piece_position(self.castle_rook_final)
+        new_board.set_piece(self.moved_piece)
+        new_board.set_piece(self.castle_rook)
+        new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
+        new_board.set_remaining_attributes()
+        return new_board
 
 
 class KingSideCastleMove(CastleMove):
 
-    def __init__(self, board, moved_piece, destination_coordinate):
-        CastleMove.__init__(self, board, moved_piece, destination_coordinate)
+    def __init__(self, board, moved_piece, destination_coordinate,
+                 castle_rook, castle_rook_initial, castle_rook_final):
+        CastleMove.__init__(self, board, moved_piece, destination_coordinate,
+                            castle_rook, castle_rook_initial, castle_rook_final)
 
 
 class QueenSideCastleMove(CastleMove):
-    def __init__(self, board, moved_piece, destination_coordinate):
-        CastleMove.__init__(self, board, moved_piece, destination_coordinate)
+    def __init__(self, board, moved_piece, destination_coordinate,
+                 castle_rook, castle_rook_initial, castle_rook_final):
+        CastleMove.__init__(self, board, moved_piece, destination_coordinate,
+                            castle_rook, castle_rook_initial, castle_rook_final)
 
 
 class NoMove(Move):

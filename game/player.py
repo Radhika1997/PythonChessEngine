@@ -130,7 +130,10 @@ class WhitePlayer(Player):
                not self._board.get_tile(3).is_tile_occupied():
                 rook_tile = self._board.get_tile(0)
                 if rook_tile.is_tile_occupied() and rook_tile.get_pieces().get_first_move():
-                    king_castles.append(None)
+                    if not Player.calculate_attack_on_tile(2, opponent_legal) and \
+                       not Player.calculate_attack_on_tile(3, opponent_legal) and \
+                       rook_tile.get_pieces().get_piece_type() == Type.ROOK:
+                        king_castles.append(None)
 
         return king_castles
 
@@ -150,4 +153,26 @@ class BlackPlayer(Player):
         return self._board.get_white_player()
 
     def calculate_king_castles(self, player_legal, opponent_legal):
-        pass
+        king_castles = list()
+
+        if self._player_king.get_first_move() and not self.is_check():
+            if not self._board.get_tile(61).is_tile_occupied() and \
+                    not self._board.get_tile(62).is_tile_occupied():
+                rook_tile = self._board.get_tile(63)
+                if rook_tile.is_tile_occupied() and rook_tile.get_pieces().get_first_move():
+                    if not Player.calculate_attack_on_tile(61, opponent_legal) and \
+                       not Player.calculate_attack_on_tile(62, opponent_legal) and \
+                       rook_tile.get_pieces().get_piece_type() == Type.ROOK:
+                        king_castles.append(None)
+
+            if not self._board.get_tile(57).is_tile_occupied() and \
+                    not self._board.get_tile(58).is_tile_occupied() and \
+                    not self._board.get_tile(59).is_tile_occupied():
+                rook_tile = self._board.get_tile(56)
+                if rook_tile.is_tile_occupied() and rook_tile.get_pieces().get_first_move():
+                    if not Player.calculate_attack_on_tile(58, opponent_legal) and \
+                       not Player.calculate_attack_on_tile(59, opponent_legal) and \
+                       rook_tile.get_pieces().get_piece_type() == Type.ROOK:
+                        king_castles.append(None)
+
+        return king_castles
