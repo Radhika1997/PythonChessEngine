@@ -1,4 +1,5 @@
 from alliance import Alliance
+from move import KingSideCastleMove, QueenSideCastleMove
 from move_status import Status
 from move_transition import MoveTransition
 from piece_type import Type
@@ -14,6 +15,7 @@ class Player:
         self._board = board
         self._player_king = self.get_king()
         self._legal_moves = legal_moves
+        self._legal_moves.extends(self.calculate_king_castles(legal_moves, opponent_moves))
         if self.calculate_attack_on_tile(self._player_king.get_piece_position(), opponent_moves):
             self._check = True
         else:
@@ -123,7 +125,12 @@ class WhitePlayer(Player):
                     if not Player.calculate_attack_on_tile(5, opponent_legal) and \
                        not Player.calculate_attack_on_tile(6, opponent_legal) and \
                        rook_tile.get_pieces().get_piece_type() == Type.ROOK:
-                        king_castles.append(None)
+                        king_castles.append(KingSideCastleMove(self._board,
+                                                               self._player_king,
+                                                               6,
+                                                               rook_tile.get_pieces(),
+                                                               rook_tile.get_pieces().get_piece_position(),
+                                                               5))
 
             if not self._board.get_tile(1).is_tile_occupied() and \
                not self._board.get_tile(2).is_tile_occupied() and \
@@ -133,7 +140,12 @@ class WhitePlayer(Player):
                     if not Player.calculate_attack_on_tile(2, opponent_legal) and \
                        not Player.calculate_attack_on_tile(3, opponent_legal) and \
                        rook_tile.get_pieces().get_piece_type() == Type.ROOK:
-                        king_castles.append(None)
+                        king_castles.append(QueenSideCastleMove(self._board,
+                                                                self._player_king,
+                                                                2,
+                                                                rook_tile.get_pieces(),
+                                                                rook_tile.get_pieces().get_piece_position(),
+                                                                3))
 
         return king_castles
 
@@ -163,7 +175,12 @@ class BlackPlayer(Player):
                     if not Player.calculate_attack_on_tile(61, opponent_legal) and \
                        not Player.calculate_attack_on_tile(62, opponent_legal) and \
                        rook_tile.get_pieces().get_piece_type() == Type.ROOK:
-                        king_castles.append(None)
+                        king_castles.append(KingSideCastleMove(self._board,
+                                                               self._player_king,
+                                                               62,
+                                                               rook_tile.get_pieces(),
+                                                               rook_tile.get_pieces().get_piece_position(),
+                                                               61))
 
             if not self._board.get_tile(57).is_tile_occupied() and \
                     not self._board.get_tile(58).is_tile_occupied() and \
@@ -173,6 +190,11 @@ class BlackPlayer(Player):
                     if not Player.calculate_attack_on_tile(58, opponent_legal) and \
                        not Player.calculate_attack_on_tile(59, opponent_legal) and \
                        rook_tile.get_pieces().get_piece_type() == Type.ROOK:
-                        king_castles.append(None)
+                        king_castles.append(QueenSideCastleMove(self._board,
+                                                                self._player_king,
+                                                                58,
+                                                                rook_tile.get_pieces(),
+                                                                rook_tile.get_pieces().get_piece_position(),
+                                                                59))
 
         return king_castles
