@@ -27,7 +27,9 @@ class MajorMove(Move):
     def execute(self):
         new_board = Board(1)
         for piece in self.board.get_current_player().get_active_pieces():
-            if not (piece.get_piece_type() == self.moved_piece.get_piece_type() and piece.get_piece_alliance() == self.moved_piece.get_piece_alliance() and piece.get_piece_position() == self.moved_piece.get_piece_position()):
+            if not (piece.get_piece_type() == self.moved_piece.get_piece_type() and
+                    piece.get_piece_alliance() == self.moved_piece.get_piece_alliance() and
+                    piece.get_piece_position() == self.moved_piece.get_piece_position()):
                 new_board.set_piece(piece)
 
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
