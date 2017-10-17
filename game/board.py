@@ -22,6 +22,7 @@ class Board:
     white_player = None
     black_player = None
     current_player = None
+    enpassant_pawn = None
 
     def __init__(self, usage_type):
         if usage_type == 0:
@@ -87,6 +88,9 @@ class Board:
 
     def set_move_alliance(self, move_alliance):
         self.__move_alliance = move_alliance
+
+    def set_enpassant_pawn(self,piece):
+        self.enpassant_pawn = piece
 
     def create_game_board(self):
         tiles = list()

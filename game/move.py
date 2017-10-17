@@ -13,18 +13,31 @@ class Move:
         self.moved_piece = moved_piece
         self.destination_coordinate = destination_coordinate
 
+    def equals(self, move):
+        if self.destination_coordinate == move.destination_coordinate and \
+           self.moved_piece.equals(move.moved_piece):
+            return True
+        return False
+
     def get_destination_coordinate(self):
         return self.destination_coordinate
 
     def get_current_coordinate(self):
         return self.moved_piece.get_piece_position()
 
+    def is_attack(self):
+        return False
+
+    def is_castling(self):
+        return False
+
+    def get_attacked_piece(self):
+        return None
+
     def execute(self):
         new_board = Board(1)
         for piece in self.board.get_current_player().get_active_pieces():
-            if not (piece.get_piece_type() == self.moved_piece.get_piece_type() and
-                    piece.get_piece_alliance() == self.moved_piece.get_piece_alliance() and
-                    piece.get_piece_position() == self.moved_piece.get_piece_position()):
+            if not piece.equals(self.moved_piece):
                 new_board.set_piece(piece)
 
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
@@ -54,6 +67,17 @@ class AttackMove(Move):
     def execute(self):
         pass
 
+    def is_attack(self):
+        return True
+
+    def get_attacked_piece(self):
+        return self.attacked_piece
+
+    def equals(self, move):
+        if Move.equals(self, move) and self.attacked_piece.equals(move.get_attacked_piece()):
+            return True
+        return False
+
 
 class PawnMove(Move):
 
@@ -77,6 +101,23 @@ class PawnJump(Move):
 
     def __init__(self, board, moved_piece, destination_coordinate):
         Move.__init__(self, board, moved_piece, destination_coordinate)
+
+    def execute(self):
+
+        new_board = Board(1)
+        for piece in self.board.get_current_player().get_active_pieces():
+            if not piece.equals(self.moved_piece):
+                new_board.set_piece(piece)
+
+        for piece in self.board.get_current_player().get_opponent().get_active_pieces():
+            new_board.set_piece(piece)
+
+        self.moved_piece.set_piece_position(self.destination_coordinate)
+        new_board.set_piece(self.moved_piece)
+        new_board.set_enpassant_pawn(self.moved_piece)
+        new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
+        new_board.set_remaining_attributes()
+        return new_board
 
 
 class CastleMove(Move):

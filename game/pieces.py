@@ -38,6 +38,13 @@ class Pieces:
     def get_piece_type(self):
         return self._piece_type
 
+    def equals(self, piece):
+        if self.get_piece_alliance() == piece.get_piece_alliance() and \
+           self.get_piece_type() == piece.get_piece_type() and \
+           self.get_piece_position() == piece.get_piece_position():
+            return True
+        return False
+
     def is_king(self):
 
         if self._piece_type == Type.KING:
