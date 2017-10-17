@@ -7,13 +7,13 @@ class Pieces:
     _piece_position = None
     _piece_type = None
     _piece_alliance = None
-    _first_move = None
+    first_move = None
 
     def __init__(self, piece_position, piece_alliance, piece_type):
         self._piece_position = piece_position
         self._piece_alliance = piece_alliance
         self._piece_type = piece_type
-        self._first_move = True
+        self.first_move = True
 
     def calculate_legal_moves(self, board):
         pass
@@ -27,7 +27,7 @@ class Pieces:
         return self._piece_alliance
 
     def get_first_move(self):
-        return self._first_move
+        return self.first_move
 
     def get_piece_position(self):
         return self._piece_position

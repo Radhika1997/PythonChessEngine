@@ -1,6 +1,7 @@
 from alliance import Alliance
 from move_status import Status
 from move_transition import MoveTransition
+from piece_type import Type
 
 
 class Player:
@@ -59,9 +60,9 @@ class Player:
     def is_move_legal(self, move_legal):
         for moves in self._legal_moves:
             if move_legal.destination_coordinate == moves.destination_coordinate and \
-                move_legal.get_piece_position() == moves.get_piece_position() and \
-                    move_legal.get_piece_type() == moves.get_piece_type() and \
-                    move_legal.get_piece_alliance() == moves.get_piece_alliance():
+               move_legal.get_piece_position() == moves.get_piece_position() and \
+               move_legal.get_piece_type() == moves.get_piece_type() and \
+               move_legal.get_piece_alliance() == moves.get_piece_alliance():
                 return True
         return False
 
@@ -93,6 +94,9 @@ class Player:
 
         return MoveTransition(transition_board, move_execute, Status.DONE)
 
+    def calculate_king_castles(self, player_legal, opponent_legal):
+        pass
+
 
 class WhitePlayer(Player):
 
@@ -107,6 +111,28 @@ class WhitePlayer(Player):
 
     def get_opponent(self):
         return self._board.get_black_player()
+
+    def calculate_king_castles(self, player_legal, opponent_legal):
+        king_castles = list()
+
+        if self._player_king.get_first_move() and not self.is_check():
+            if not self._board.get_tile(5).is_tile_occupied() and \
+               not self._board.get_tile(6).is_tile_occupied():
+                rook_tile = self._board.get_tile(7)
+                if rook_tile.is_tile_occupied() and rook_tile.get_pieces().get_first_move():
+                    if not Player.calculate_attack_on_tile(5, opponent_legal) and \
+                       not Player.calculate_attack_on_tile(6, opponent_legal) and \
+                       rook_tile.get_pieces().get_piece_type() == Type.ROOK:
+                        king_castles.append(None)
+
+            if not self._board.get_tile(1).is_tile_occupied() and \
+               not self._board.get_tile(2).is_tile_occupied() and \
+               not self._board.get_tile(3).is_tile_occupied():
+                rook_tile = self._board.get_tile(0)
+                if rook_tile.is_tile_occupied() and rook_tile.get_pieces().get_first_move():
+                    king_castles.append(None)
+
+        return king_castles
 
 
 class BlackPlayer(Player):
@@ -123,5 +149,5 @@ class BlackPlayer(Player):
     def get_opponent(self):
         return self._board.get_white_player()
 
-
-
+    def calculate_king_castles(self, player_legal, opponent_legal):
+        pass
