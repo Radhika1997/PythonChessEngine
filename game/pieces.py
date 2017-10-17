@@ -32,6 +32,9 @@ class Pieces:
     def get_piece_position(self):
         return self._piece_position
 
+    def set_piece_position(self, piece_position):
+        self._piece_position = piece_position
+
     def get_piece_type(self):
         return self._piece_type
 

@@ -32,7 +32,9 @@ class MajorMove(Move):
 
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
             new_board.set_piece(piece)
-        new_board.set_piece(None)
+
+        self.moved_piece.set_piece_position(self.destination_coordinate)
+        new_board.set_piece(self.moved_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
         return new_board
