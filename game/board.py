@@ -9,6 +9,7 @@ from rook import Rook
 from tile import *
 from player import BlackPlayer,WhitePlayer
 
+
 class Board:
 
     __board_config = dict()
@@ -22,16 +23,20 @@ class Board:
     black_player = None
     current_player = None
 
-    def __init__(self):
-        self.create_standard_game()
-        self.game_board = self.create_game_board()
-        self.white_pieces = self.calculate_active_pieces(self.game_board, Alliance.WHITE)
-        self.black_pieces = self.calculate_active_pieces(self.game_board, Alliance.BLACK)
-        self.white_legal_moves = self.calculate_total_legal_moves(self.white_pieces)
-        self.black_legal_moves = self.calculate_total_legal_moves(self.black_pieces)
-        self.white_player = WhitePlayer(self, self.white_legal_moves, self.black_legal_moves)
-        self.black_player = BlackPlayer(self, self.black_legal_moves, self.white_legal_moves)
-        self.current_player = None
+    def __init__(self, usage_type):
+        if usage_type == 0:
+            self.create_standard_game()
+            self.game_board = self.create_game_board()
+            self.white_pieces = self.calculate_active_pieces(self.game_board, Alliance.WHITE)
+            self.black_pieces = self.calculate_active_pieces(self.game_board, Alliance.BLACK)
+            self.white_legal_moves = self.calculate_total_legal_moves(self.white_pieces)
+            self.black_legal_moves = self.calculate_total_legal_moves(self.black_pieces)
+            self.white_player = WhitePlayer(self, self.white_legal_moves, self.black_legal_moves)
+            self.black_player = BlackPlayer(self, self.black_legal_moves, self.white_legal_moves)
+            if self.__move_alliance == Alliance.WHITE:
+                self.current_player = self.white_player
+            elif self.__move_alliance == Alliance.BLACK:
+                self.current_player = self.black_player
 
     def get_white_player(self):
         return self.white_player
@@ -59,6 +64,18 @@ class Board:
         for piece in all_pieces:
             legal_moves.append(piece.calculate_legal_moves(self))
         return legal_moves
+
+    def set_remaining_attributes(self):
+        self.white_pieces = self.calculate_active_pieces(self.game_board, Alliance.WHITE)
+        self.black_pieces = self.calculate_active_pieces(self.game_board, Alliance.BLACK)
+        self.white_legal_moves = self.calculate_total_legal_moves(self.white_pieces)
+        self.black_legal_moves = self.calculate_total_legal_moves(self.black_pieces)
+        self.white_player = WhitePlayer(self, self.white_legal_moves, self.black_legal_moves)
+        self.black_player = BlackPlayer(self, self.black_legal_moves, self.white_legal_moves)
+        if self.__move_alliance == Alliance.WHITE:
+            self.current_player = self.white_player
+        elif self.__move_alliance == Alliance.BLACK:
+            self.current_player = self.black_player
 
     def set_piece(self, piece):
         self.__board_config[piece.get_piece_postion()] = piece

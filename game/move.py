@@ -1,5 +1,5 @@
 from pieces import Pieces
-
+from board import Board
 
 class Move:
 
@@ -25,7 +25,17 @@ class MajorMove(Move):
         Move.__init__(self, board, moved_piece, destination_coordinate)
 
     def execute(self):
-        pass
+        new_board = Board(1)
+        for piece in self.board.get_current_player().get_active_pieces():
+            if not (piece.get_piece_type() == self.moved_piece.get_piece_type() and piece.get_piece_alliance() == self.moved_piece.get_piece_alliance() and piece.get_piece_position() == self.moved_piece.get_piece_position()):
+                new_board.set_piece(piece)
+
+        for piece in self.board.get_current_player().get_opponent().get_active_pieces():
+            new_board.set_piece(piece)
+        new_board.set_piece(None)
+        new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
+        new_board.set_remaining_attributes()
+        return new_board
 
 
 class AttackMove(Move):
