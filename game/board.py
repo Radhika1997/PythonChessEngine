@@ -47,6 +47,11 @@ class Board:
     def get_current_player(self):
         return self.current_player
 
+    def get_all_legal_moves(self):
+        all_moves = self.white_legal_moves
+        all_moves.extend(self.black_legal_moves)
+        return all_moves
+
     @staticmethod
     def calculate_active_pieces(game_board, alliance):
         active_pieces = list()
