@@ -1,34 +1,74 @@
-<Action>:
-    pos_hint: {'top':1}
-    ActionView:
-        use_separator: True
-        ActionPrevious:
-            title: 'Chess Engine'
-            with_previous: False
-            app_icon: 'game/images/icon.png'
-        ActionOverflow:
-        ActionButton:
-            text: 'Btn1'
-        ActionButton:
-            text: 'Btn2'
-        ActionButton:
-            text: 'Btn3'
-        ActionButton:
-            text: 'Btn4'
-        ActionGroup:
-            text: 'Drop'
+#:import Factory kivy.factory.Factory
+
+BoxLayout:
+    orientation: 'vertical'
+
+    canvas.before:
+        Color:
+            rgb: .6, .6, .6
+        Rectangle:
+            size: self.size
+    ActionBar:
+        pos_hint: {'top':1}
+        ActionView:
+            use_separator: True
+            ActionPrevious:
+                title: 'Chess Engine'
+                with_previous: False
+                app_icon: 'game/images/icon.png'
+            ActionOverflow:
             ActionButton:
-                text: 'For'
+                text: 'Btn1'
             ActionButton:
-                text: 'Future'
+                text: 'Btn2'
             ActionButton:
-                text: 'Use'
-        ActionGroup:
-            text: 'Menu'
+                text: 'Btn3'
             ActionButton:
-                text: 'Load PGN File'
-            ActionButton:
-                text: 'Something'
-            ActionButton:
-                text: 'Exit'
-                on_release: app.btn_exit()
+                text: 'Btn4'
+            ActionGroup:
+                text: 'Drop'
+                ActionButton:
+                    text: 'For'
+                ActionButton:
+                    text: 'Future'
+                ActionButton:
+                    text: 'Use'
+            ActionGroup:
+                text: 'Menu'
+                ActionButton:
+                    text: 'Load PGN File'
+                ActionButton:
+                    text: 'Something'
+                ActionButton:
+                    text: 'Exit'
+                    on_release: app.btn_exit()
+
+    ScreenManagement:
+        id: sm
+        transition: Factory.get('FadeTransition')()
+        MainScreen:
+            name: 'start'
+            canvas.before:
+                Color:
+                    rgb: 0.15, 0.15, 0.15
+                Rectangle:
+                    size: self.size
+
+            AnchorLayout:
+                Button:
+                    size_hint: None, None
+                    size: '150dp', '48dp'
+                    text: 'Start'
+                    on_release: sm.current = 'game'
+
+        GameScreen:
+            id: gs
+            BoxLayout:
+                orientation: 'vertical'
+                GameLayout:
+                    id: gl
+                Button:
+                    size_hint: None, None
+                    size: gs.width, '48dp'
+                    text: 'Resize'
+                    on_release: gs.apply_ratio(gl)
