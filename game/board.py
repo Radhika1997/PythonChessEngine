@@ -1,11 +1,4 @@
-from move import *
 from alliance import Alliance
-from bishop import Bishop
-from king import King
-from knight import Knight
-from pawn import Pawn
-from queen import Queen
-from rook import Rook
 from tile import *
 from player import BlackPlayer,WhitePlayer
 
@@ -68,7 +61,7 @@ class Board:
     def calculate_total_legal_moves(self, all_pieces):
         legal_moves = list()
         for piece in all_pieces:
-            legal_moves.append(piece.calculate_legal_moves(self))
+            legal_moves.extend(piece.calculate_legal_moves(self))
         return legal_moves
 
     def set_remaining_attributes(self):
@@ -84,7 +77,7 @@ class Board:
             self.current_player = self.black_player
 
     def set_piece(self, piece):
-        self.__board_config[piece.get_piece_postion()] = piece
+        self.__board_config[piece.get_piece_position()] = piece
 
     def set_move_alliance(self, move_alliance):
         self.__move_alliance = move_alliance
@@ -103,7 +96,12 @@ class Board:
         return tiles
 
     def create_standard_game(self):
-
+        from bishop import Bishop
+        from king import King
+        from knight import Knight
+        from pawn import Pawn
+        from queen import Queen
+        from rook import Rook
         self.set_piece(Rook(0, Alliance.WHITE))
         self.set_piece(Knight(1, Alliance.WHITE))
         self.set_piece(Bishop(2, Alliance.WHITE))

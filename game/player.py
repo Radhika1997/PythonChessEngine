@@ -15,7 +15,7 @@ class Player:
         self._board = board
         self._player_king = self.get_king()
         self._legal_moves = legal_moves
-        self._legal_moves.extends(self.calculate_king_castles(legal_moves, opponent_moves))
+        self._legal_moves.extend(self.calculate_king_castles(legal_moves, opponent_moves))
         if self.calculate_attack_on_tile(self._player_king.get_piece_position(), opponent_moves):
             self._check = True
         else:

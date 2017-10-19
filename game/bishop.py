@@ -1,5 +1,5 @@
 from pieces import *
-from move import *
+from move import MajorMove, AttackMove
 from piece_type import Type
 
 
@@ -83,4 +83,3 @@ class Bishop(Pieces):
                     legal_moves.append(MajorMove(board, self, possibility))
 
         return legal_moves
-

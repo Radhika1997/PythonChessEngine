@@ -83,4 +83,3 @@ class Rook(Pieces):
                     legal_moves.append(MajorMove(board, self, possibility))
 
         return legal_moves
-

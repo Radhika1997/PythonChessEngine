@@ -1,5 +1,5 @@
 from pieces import Pieces
-from board import Board
+
 
 
 class Move:
@@ -35,6 +35,7 @@ class Move:
         return None
 
     def execute(self):
+        from board import Board
         new_board = Board(1)
         for piece in self.board.get_current_player().get_active_pieces():
             if not piece.equals(self.moved_piece):
@@ -103,7 +104,7 @@ class PawnJump(Move):
         Move.__init__(self, board, moved_piece, destination_coordinate)
 
     def execute(self):
-
+        from board import Board
         new_board = Board(1)
         for piece in self.board.get_current_player().get_active_pieces():
             if not piece.equals(self.moved_piece):
@@ -140,6 +141,7 @@ class CastleMove(Move):
         return True
 
     def execute(self):
+        from board import Board
         new_board = Board(1)
         for piece in self.board.get_current_player().get_active_pieces():
             if not piece.equals(self.moved_piece) and not piece.equals(self.castle_rook):
