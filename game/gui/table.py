@@ -14,6 +14,7 @@ class TilePanel(Button):
     def __init__(self, **kwargs):
         super(TilePanel, self).__init__(**kwargs)
         self.size = ['10dp', '10dp']
+        self.background_normal = ""
 
     def set_color(self, red, green, blue, alpha):
         self.background_color = [red, green, blue, alpha]
@@ -39,14 +40,14 @@ class GameLayout(GridLayout):
             tile_panels[i].set_id(i)
             if i<8:
                 if i%2 == 0:
-                    tile_panels[i].set_color(0,0,0,1)
+                    tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
                 else:
-                    tile_panels[i].set_color(1, 1, 1, 1)
+                    tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
             else:
-                if tile_panels[i-8].get_color() == [0,0,0,1]:
-                    tile_panels[i].set_color(1, 1, 1, 1)
+                if tile_panels[i-8].get_color() == [0.466, 0.345, 0.156, 1]:
+                    tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
                 else:
-                    tile_panels[i].set_color(0, 0, 0, 1)
+                    tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
 
         for tile_panel in tile_panels:
             self.add_widget(tile_panel)
