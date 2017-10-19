@@ -1,7 +1,6 @@
 from pieces import Pieces
 
 
-
 class Move:
 
     board = None
@@ -194,7 +193,8 @@ class MoveCreator:
     def create_move(self,board, current_coordinate, destination_coordinate):
 
         for move in board.get_all_legal_moves():
-            if move.get_current_coordinate() == current_coordinate and move.get_destination_coordinate() == destination_coordinate:
+            if move.get_current_coordinate() == current_coordinate and \
+               move.get_destination_coordinate() == destination_coordinate:
                 return move
 
         return NO_MOVE

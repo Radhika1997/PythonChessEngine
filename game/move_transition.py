@@ -12,4 +12,5 @@ class MoveTransition:
     def get_move_status(self):
         return self.move_status
 
-
+    def get_transition_board(self):
+        return self.transition_board
