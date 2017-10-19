@@ -65,10 +65,5 @@ BoxLayout:
             id: gs
             BoxLayout:
                 orientation: 'vertical'
+
                 GameLayout:
-                    id: gl
-                Button:
-                    size_hint: None, None
-                    size: gs.width, '48dp'
-                    text: 'Resize'
-                    on_release: gs.apply_ratio(gl)
