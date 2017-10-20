@@ -59,7 +59,7 @@ class TilePanel(Button):
                 h = h2
             child.size = w, h
 
-    # TODO work on on_press method for better interaction
+    # TODO work on on_press method for better interaction and errors in on_release
 
     def on_release(self):
         global source_tile, destination_tile, human_moved_piece, source_color, destination_color
@@ -189,3 +189,28 @@ class Table(App):
     def btn_exit(self):
         exit(0)
 
+
+class MoveLog:
+
+    moves = list()
+
+    def __init__(self):
+        pass
+
+    def add_move(self, move):
+        self.moves.extend(move)
+
+    def size(self):
+        return len(self.moves)
+
+    def clear(self):
+        self.moves = list()
+
+    def remove_move(self, val):
+        if val is int():
+            del self.moves[val]
+        else:
+            for move in self.moves:
+                if val.equals(move):
+                    self.moves.remove(val.equals(move))
+                    break
