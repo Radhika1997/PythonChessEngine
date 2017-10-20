@@ -52,6 +52,9 @@ class Pieces:
         else:
             return False
 
+    def set_first_move(self, first_move):
+        self.first_move = first_move
+
     def set_path(self, alliance, piece_type):
         if Alliance.BLACK == alliance:
             if Type.BISHOP == piece_type:

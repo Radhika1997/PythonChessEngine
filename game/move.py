@@ -47,6 +47,7 @@ class Move:
             new_board.set_piece(piece)
 
         self.moved_piece.set_piece_position(self.destination_coordinate)
+        self.moved_piece.set_first_move(False)
         new_board.set_piece(self.moved_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()

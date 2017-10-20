@@ -12,9 +12,9 @@ Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import NumericProperty
 
-source_tile = -1
+source_tile = None
 board = Board(0)
-destination_tile = -1
+destination_tile = None
 human_moved_piece = None
 source_color = None
 destination_color = None
@@ -63,11 +63,11 @@ class TilePanel(Button):
 
     def on_release(self):
         global source_tile, destination_tile, human_moved_piece, source_color, destination_color
-        if source_tile == -1:
+        if source_tile is None:
             source_tile = self.parent.board.get_tile(int(self.id))
             human_moved_piece = source_tile.get_pieces()
             if human_moved_piece is None:
-                source_tile = -1
+                source_tile = None
             else:
                 source_color = self.background_color
                 self.set_color(0.074, 0.467, 0.156, 1)
@@ -103,7 +103,7 @@ class TilePanel(Button):
                                                                                  source_color[1],
                                                                                  source_color[2],
                                                                                  source_color[3])
-            source_tile = -1
+            source_tile = None
             human_moved_piece = None
             source_color = None
 
