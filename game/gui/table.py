@@ -16,6 +16,8 @@ source_tile = -1
 board = Board(0)
 destination_tile = -1
 human_moved_piece = None
+source_color = None
+destination_color = None
 
 
 class TilePanel(Button):
@@ -57,16 +59,31 @@ class TilePanel(Button):
                 h = h2
             child.size = w, h
 
+    # TODO work on on_press method for better interaction
+
     def on_release(self):
-        global source_tile, destination_tile, human_moved_piece
+        global source_tile, destination_tile, human_moved_piece, source_color, destination_color
         if source_tile == -1:
             source_tile = self.parent.board.get_tile(int(self.id))
             human_moved_piece = source_tile.get_pieces()
             if human_moved_piece is None:
                 source_tile = -1
+            else:
+                source_color = self.background_color
+                self.set_color(0.074, 0.467, 0.156, 1)
+
+            if destination_color is not None:
+                self.parent.tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
+                                                                                          destination_color[1],
+                                                                                          destination_color[2],
+                                                                                          destination_color[3])
+                destination_color = None
+                destination_tile = None
+
         else:
             destination_tile = self.parent.board.get_tile(int(self.id))
             destination_coordinate = destination_tile.get_tile_coordinate()
+            destination_color = self.get_color()
             move = MoveCreator().create_move(self.parent.board,
                                              source_tile.get_tile_coordinate(),
                                              destination_coordinate)
@@ -79,9 +96,16 @@ class TilePanel(Button):
                         self.parent.board.get_tile(destination_coordinate).get_pieces().get_piece_type())
                     self.set_image(path)
                     self.parent.tile_panels[source_tile.get_tile_coordinate()].clear_widgets()
+
+            else:
+                self.set_color(0.686, 0.109, 0.109, 1)
+            self.parent.tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
+                                                                                 source_color[1],
+                                                                                 source_color[2],
+                                                                                 source_color[3])
             source_tile = -1
-            destination_tile = -1
             human_moved_piece = None
+            source_color = None
 
 
 class GameLayout(GridLayout):
