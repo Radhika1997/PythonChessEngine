@@ -1,5 +1,6 @@
 import kivy
 from game.board import Board
+from game.move import MoveCreator
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.button import Button
@@ -9,6 +10,11 @@ from kivy.core.window import Window
 Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import NumericProperty
+
+source_tile = -1
+board = Board(0)
+destination_tile = -1
+human_moved_piece = None
 
 
 class TilePanel(Button):
@@ -38,7 +44,6 @@ class TilePanel(Button):
 
             child.x = self.x
             child.y = self.y
-            print
             child.size_hint = 0.5, 0.5
             child.pos_hint = {"center_x": .5, "center_y": .5}
             w, h = self.size
@@ -49,6 +54,24 @@ class TilePanel(Button):
             else:
                 h = h2
             child.size = w, h
+
+    def on_release(self):
+        global source_tile, destination_tile, human_moved_piece
+        if source_tile == -1:
+            source_tile = self.parent.board.get_tile(int(self.id))
+            human_moved_piece = source_tile.get_pieces()
+            if human_moved_piece is None:
+                source_tile = -1
+        else:
+            destination_tile = self.parent.board.get_tile(int(self.id))
+            move = MoveCreator().create_move(self.parent.board,
+                                             source_tile.get_tile_coordinate(),
+                                             destination_tile.get_tile_coordinate())
+            transition = self.parent.board.get_current_player().make_move(move)
+            print transition
+            source_tile = -1
+            destination_tile = -1
+            human_moved_piece = None
 
 
 class GameLayout(GridLayout):
@@ -61,7 +84,8 @@ class GameLayout(GridLayout):
         self.rows = 8
         self.id = 'gl'
         tile_panels = list()
-        self.board = Board(0)
+        global board
+        self.board = board
 
         for i in range(0,64):
             tile_panels.append(TilePanel())
@@ -116,10 +140,10 @@ class GameScreen(Screen):
         child.apply_ratio()
 
     def my_callback(self,dt):
-        for childs in self.children:
-            for child in childs.children:
-                if child.id == 'gl':
-                    self.apply_ratio(child)
+        for child in self.children:
+            for every_child in child.children:
+                if every_child.id == 'gl':
+                    self.apply_ratio(every_child)
 
 
 class ScreenManagement(ScreenManager):

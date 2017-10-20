@@ -10,6 +10,9 @@ class Tile:
     def get_pieces(self):
         pass
 
+    def get_tile_coordinate(self):
+        return self._tile_coordinate
+
     def __create_all_possible_empty_tiles(self):
         empty_tile_dict = dict()
 

@@ -21,6 +21,9 @@ class Move:
     def get_destination_coordinate(self):
         return self.destination_coordinate
 
+    def get_moved_piece(self):
+        return self.moved_piece
+
     def get_current_coordinate(self):
         return self.moved_piece.get_piece_position()
 

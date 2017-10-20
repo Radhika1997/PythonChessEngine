@@ -12,8 +12,6 @@ class Player:
     _check = None
 
     def __init__(self, board, legal_moves, opponent_moves):
-        self._board = board
-        self._player_king = self.get_king()
         self._legal_moves = legal_moves
         self._legal_moves.extend(self.calculate_king_castles(legal_moves, opponent_moves))
         if self.calculate_attack_on_tile(self._player_king.get_piece_position(), opponent_moves):
@@ -22,11 +20,7 @@ class Player:
             self._check = False
 
     def get_king(self):
-        for piece in self.get_active_pieces():
-            if piece.is_king():
-                return piece
-        else:
-            raise RuntimeError("King doesn't exist")
+        pass
 
     def get_player_king(self):
         return self._player_king
@@ -62,9 +56,9 @@ class Player:
     def is_move_legal(self, move_legal):
         for moves in self._legal_moves:
             if move_legal.destination_coordinate == moves.destination_coordinate and \
-               move_legal.get_piece_position() == moves.get_piece_position() and \
-               move_legal.get_piece_type() == moves.get_piece_type() and \
-               move_legal.get_piece_alliance() == moves.get_piece_alliance():
+               move_legal.get_moved_piece().get_piece_position() == moves.get_moved_piece().get_piece_position() and \
+               move_legal.get_moved_piece().get_piece_type() == moves.get_moved_piece().get_piece_type() and \
+               move_legal.get_moved_piece().get_piece_alliance() == moves.get_moved_piece().get_piece_alliance():
                 return True
         return False
 
@@ -103,6 +97,8 @@ class Player:
 class WhitePlayer(Player):
 
     def __init__(self, board, legal_moves, opponent_moves):
+        self._board = board
+        self._player_king = self.get_king()
         Player.__init__(self, board, legal_moves, opponent_moves)
 
     def get_active_pieces(self):
@@ -113,6 +109,13 @@ class WhitePlayer(Player):
 
     def get_opponent(self):
         return self._board.get_black_player()
+
+    def get_king(self):
+        for piece in self.get_active_pieces():
+            if piece.is_king():
+                return piece
+        else:
+            raise RuntimeError("King doesn't exist")
 
     def calculate_king_castles(self, player_legal, opponent_legal):
         king_castles = list()
@@ -153,6 +156,8 @@ class WhitePlayer(Player):
 class BlackPlayer(Player):
 
     def __init__(self, board, legal_moves, opponent_moves):
+        self._board = board
+        self._player_king = self.get_king()
         Player.__init__(self, board, legal_moves, opponent_moves)
 
     def get_active_pieces(self):
@@ -163,6 +168,13 @@ class BlackPlayer(Player):
 
     def get_opponent(self):
         return self._board.get_white_player()
+
+    def get_king(self):
+        for piece in self.get_active_pieces():
+            if piece.is_king():
+                return piece
+        else:
+            raise RuntimeError("King doesn't exist")
 
     def calculate_king_castles(self, player_legal, opponent_legal):
         king_castles = list()

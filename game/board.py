@@ -65,6 +65,7 @@ class Board:
         return legal_moves
 
     def set_remaining_attributes(self):
+        self.game_board = self.create_game_board()
         self.white_pieces = self.calculate_active_pieces(self.game_board, Alliance.WHITE)
         self.black_pieces = self.calculate_active_pieces(self.game_board, Alliance.BLACK)
         self.white_legal_moves = self.calculate_total_legal_moves(self.white_pieces)
