@@ -1,6 +1,7 @@
 import kivy
 from game.board import Board
 from game.move import MoveCreator
+from game.move_status import Status
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.button import Button
@@ -20,6 +21,7 @@ human_moved_piece = None
 class TilePanel(Button):
     ratio = NumericProperty(1 / 1)
     default_path = "game/images/pieces/"
+    path = ""
 
     def __init__(self, **kwargs):
         super(TilePanel, self).__init__(**kwargs)
@@ -64,11 +66,19 @@ class TilePanel(Button):
                 source_tile = -1
         else:
             destination_tile = self.parent.board.get_tile(int(self.id))
+            destination_coordinate = destination_tile.get_tile_coordinate()
             move = MoveCreator().create_move(self.parent.board,
                                              source_tile.get_tile_coordinate(),
-                                             destination_tile.get_tile_coordinate())
+                                             destination_coordinate)
             transition = self.parent.board.get_current_player().make_move(move)
-            print transition
+            if transition.get_move_status() == Status.DONE:
+                self.parent.board = transition.get_transition_board()
+                if not self.parent.board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                    path = self.parent.board.get_tile(destination_coordinate).get_pieces().set_path(
+                        self.parent.board.get_tile(destination_coordinate).get_pieces().get_piece_alliance(),
+                        self.parent.board.get_tile(destination_coordinate).get_pieces().get_piece_type())
+                    self.set_image(path)
+                    self.parent.tile_panels[source_tile.get_tile_coordinate()].clear_widgets()
             source_tile = -1
             destination_tile = -1
             human_moved_piece = None
@@ -77,37 +87,37 @@ class TilePanel(Button):
 class GameLayout(GridLayout):
     ratio = NumericProperty(1 / 1)
     board = None
+    tile_panels = list()
 
     def __init__(self, **kwargs):
         super(GameLayout, self).__init__(**kwargs)
         self.cols = 8
         self.rows = 8
         self.id = 'gl'
-        tile_panels = list()
         global board
         self.board = board
 
         for i in range(0,64):
-            tile_panels.append(TilePanel())
-            tile_panels[i].set_id(i)
+            self.tile_panels.append(TilePanel())
+            self.tile_panels[i].set_id(i)
             if i<8:
                 if i%2 == 0:
-                    tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
+                    self.tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
                 else:
-                    tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
+                    self.tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
             else:
-                if tile_panels[i-8].get_color() == [0.466, 0.345, 0.156, 1]:
-                    tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
+                if self.tile_panels[i-8].get_color() == [0.466, 0.345, 0.156, 1]:
+                    self.tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
                 else:
-                    tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
+                    self.tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
 
             if self.board.get_tile(i).is_tile_occupied():
                 path = self.board.get_tile(i).get_pieces().set_path(
                     self.board.get_tile(i).get_pieces().get_piece_alliance(),
                     self.board.get_tile(i).get_pieces().get_piece_type())
-                tile_panels[i].set_image(path)
+                self.tile_panels[i].set_image(path)
 
-        for tile_panel in tile_panels:
+        for tile_panel in self.tile_panels:
             self.add_widget(tile_panel)
 
     def apply_ratio(self):
@@ -125,7 +135,7 @@ class GameScreen(Screen):
     def __init__(self, **kw):
         super(GameScreen, self).__init__(**kw)
         self.name = 'game'
-        Clock.schedule_interval(self.my_callback, 3)
+        Clock.schedule_interval(self.my_callback, 0.01)
 
     def apply_ratio(self, child):
         child.size_hint = None, None

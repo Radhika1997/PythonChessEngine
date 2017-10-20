@@ -31,6 +31,8 @@ class Board:
                 self.current_player = self.white_player
             elif self.__move_alliance == Alliance.BLACK:
                 self.current_player = self.black_player
+        else:
+            self.__board_config = dict()
 
     def get_white_player(self):
         return self.white_player
