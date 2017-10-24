@@ -20,6 +20,35 @@ source_color = None
 destination_color = None
 
 
+class MoveLog:
+
+    moves = list()
+
+    def __init__(self):
+        pass
+
+    def add_move(self, move):
+        self.moves.append(move)
+
+    def size(self):
+        return len(self.moves)
+
+    def clear(self):
+        self.moves = list()
+
+    def remove_move(self, val):
+        if val is int():
+            del self.moves[val]
+        else:
+            for move in self.moves:
+                if val.equals(move):
+                    self.moves.remove(val.equals(move))
+                    break
+
+
+move_log = MoveLog()
+
+
 class TilePanel(Button):
     ratio = NumericProperty(1 / 1)
     default_path = "game/images/pieces/"
@@ -98,6 +127,8 @@ class TilePanel(Button):
                         self.parent.board.get_tile(destination_coordinate).get_pieces().get_piece_type())
                     self.set_image(path)
                     self.parent.tile_panels[source_tile.get_tile_coordinate()].clear_widgets()
+                    global move_log
+                    move_log.add_move(move)
                     player = self.parent.board.get_current_player()
                     print self.parent.board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate() + \
                         player.get_player_checks()
@@ -193,29 +224,3 @@ class Table(App):
 
     def btn_exit(self):
         exit(0)
-
-
-class MoveLog:
-
-    moves = list()
-
-    def __init__(self):
-        pass
-
-    def add_move(self, move):
-        self.moves.extend(move)
-
-    def size(self):
-        return len(self.moves)
-
-    def clear(self):
-        self.moves = list()
-
-    def remove_move(self, val):
-        if val is int():
-            del self.moves[val]
-        else:
-            for move in self.moves:
-                if val.equals(move):
-                    self.moves.remove(val.equals(move))
-                    break
