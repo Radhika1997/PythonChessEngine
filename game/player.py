@@ -13,7 +13,13 @@ class Player:
 
     def __init__(self, board, legal_moves, opponent_moves):
         self._legal_moves = legal_moves
+        '''
+        for opponent_move in opponent_moves:
+            print opponent_move.moved_piece'''
         self._legal_moves.extend(self.calculate_king_castles(legal_moves, opponent_moves))
+        '''
+        for legal_move in legal_moves:
+            print legal_move.moved_piece'''
         if self.calculate_attack_on_tile(self._player_king.get_piece_position(), opponent_moves):
             self._check = True
         else:
@@ -21,6 +27,14 @@ class Player:
 
     def get_king(self):
         pass
+
+    def get_player_checks(self):
+        if self.is_checkmate():
+            return "#"
+        elif self.is_check():
+            return "+"
+        else:
+            return ""
 
     def get_player_king(self):
         return self._player_king
@@ -48,7 +62,9 @@ class Player:
     # TODO work below methods
     def no_escape_moves(self):
         for move in self._legal_moves:
+            #print move, move.moved_piece, move.board.get_current_player()
             transition = self.make_move(move)
+            #print transition.get_move_status(), transition.transition_board.get_current_player(), transition.move.moved_piece, transition.move.get_destination_coordinate()
             if transition.get_move_status() == Status.DONE:
                 return False
         return True
@@ -66,7 +82,8 @@ class Player:
         return self._check
 
     def is_checkmate(self):
-        return self._check and self.no_escape_moves()
+        s = self.no_escape_moves()
+        return self._check and s
 
     def is_stalemate(self):
         return not self._check and self.no_escape_moves()
@@ -80,10 +97,12 @@ class Player:
             return MoveTransition(self._board, move_execute, Status.ILLEGAL_MOVE)
 
         transition_board = move_execute.execute()
-        king_attacks = Player.calculate_attack_on_tile(transition_board.get_current_player()
+        print len(transition_board.board_config), transition_board.board_config
+        king_attacks = Player.calculate_attack_on_tile(transition_board.get_current_player().get_opponent()
                                                        .get_player_king().get_piece_position(),
                                                        transition_board.get_current_player().
                                                        get_legal_moves())
+        # print king_attacks
 
         if king_attacks:
             return MoveTransition(self._board, move_execute, Status.LEAVES_PLAYER_IN_CHECK)

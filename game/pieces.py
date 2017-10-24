@@ -23,6 +23,33 @@ class Pieces:
         y = self.piece_position % 8
         return x,y
 
+    def get_chess_coordinate(self):
+        x,y = self._calculate_coordinates()
+        chess_coordinate = None
+        if y == 0:
+            chess_coordinate = 'a'
+        elif y == 1:
+            chess_coordinate = 'b'
+        elif y == 2:
+            chess_coordinate = 'c'
+        elif y == 3:
+            chess_coordinate = 'd'
+        elif y == 4:
+            chess_coordinate = 'e'
+        elif y == 5:
+            chess_coordinate = 'f'
+        elif y == 6:
+            chess_coordinate = 'g'
+        elif y == 7:
+            chess_coordinate = 'h'
+        alliance = None
+        if self._piece_alliance == Alliance.WHITE:
+            alliance = "W: "
+        else:
+            alliance = "B: "
+
+        return alliance + chess_coordinate + str(x+1)
+
     def get_piece_alliance(self):
         return self._piece_alliance
 

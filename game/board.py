@@ -5,8 +5,8 @@ from player import BlackPlayer,WhitePlayer
 
 class Board:
 
-    __board_config = dict()
-    __move_alliance = None
+    board_config = dict()
+    move_alliance = None
     game_board = list()
     white_pieces = list()
     black_pieces = list()
@@ -27,12 +27,12 @@ class Board:
             self.black_legal_moves = self.calculate_total_legal_moves(self.black_pieces)
             self.white_player = WhitePlayer(self, self.white_legal_moves, self.black_legal_moves)
             self.black_player = BlackPlayer(self, self.black_legal_moves, self.white_legal_moves)
-            if self.__move_alliance == Alliance.WHITE:
+            if self.move_alliance == Alliance.WHITE:
                 self.current_player = self.white_player
-            elif self.__move_alliance == Alliance.BLACK:
+            elif self.move_alliance == Alliance.BLACK:
                 self.current_player = self.black_player
         else:
-            self.__board_config = dict()
+            self.board_config = dict()
 
     def get_white_player(self):
         return self.white_player
@@ -74,16 +74,16 @@ class Board:
         self.black_legal_moves = self.calculate_total_legal_moves(self.black_pieces)
         self.white_player = WhitePlayer(self, self.white_legal_moves, self.black_legal_moves)
         self.black_player = BlackPlayer(self, self.black_legal_moves, self.white_legal_moves)
-        if self.__move_alliance == Alliance.WHITE:
+        if self.move_alliance == Alliance.WHITE:
             self.current_player = self.white_player
-        elif self.__move_alliance == Alliance.BLACK:
+        elif self.move_alliance == Alliance.BLACK:
             self.current_player = self.black_player
 
     def set_piece(self, piece):
-        self.__board_config[piece.get_piece_position()] = piece
+        self.board_config[piece.get_piece_position()] = piece
 
     def set_move_alliance(self, move_alliance):
-        self.__move_alliance = move_alliance
+        self.move_alliance = move_alliance
 
     def set_enpassant_pawn(self,piece):
         self.enpassant_pawn = piece
@@ -93,7 +93,7 @@ class Board:
         for i in range(64):
             tile_var = Tile(i)
             try:
-                tiles.append(tile_var.create_tile(i, self.__board_config[i]))
+                tiles.append(tile_var.create_tile(i, self.board_config[i]))
             except KeyError:
                 tiles.append(tile_var.create_tile(i, None))
         return tiles
