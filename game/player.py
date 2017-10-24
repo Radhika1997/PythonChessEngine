@@ -82,8 +82,7 @@ class Player:
         return self._check
 
     def is_checkmate(self):
-        s = self.no_escape_moves()
-        return self._check and s
+        return self._check and self.no_escape_moves()
 
     def is_stalemate(self):
         return not self._check and self.no_escape_moves()
@@ -97,7 +96,7 @@ class Player:
             return MoveTransition(self._board, move_execute, Status.ILLEGAL_MOVE)
 
         transition_board = move_execute.execute()
-        print len(transition_board.board_config), transition_board.board_config
+        # print len(transition_board.board_config), transition_board.board_config
         king_attacks = Player.calculate_attack_on_tile(transition_board.get_current_player().get_opponent()
                                                        .get_player_king().get_piece_position(),
                                                        transition_board.get_current_player().
@@ -105,7 +104,7 @@ class Player:
         # print king_attacks
 
         if king_attacks:
-            return MoveTransition(self._board, move_execute, Status.LEAVES_PLAYER_IN_CHECK)
+            return MoveTransition(transition_board, move_execute, Status.LEAVES_PLAYER_IN_CHECK)
 
         return MoveTransition(transition_board, move_execute, Status.DONE)
 

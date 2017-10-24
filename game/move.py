@@ -42,7 +42,9 @@ class Move:
         for piece in self.board.get_current_player().get_active_pieces():
             if not piece.equals(self.moved_piece):
                 new_board.set_piece(piece)
-
+            else:
+                pass
+                # print 'i am here'
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
             new_board.set_piece(piece)
 
@@ -51,6 +53,8 @@ class Move:
         new_board.set_piece(self.moved_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
+        # print len(self.board.board_config), self.board.board_config
+        # print len(new_board.board_config), new_board.board_config
         return new_board
 
 
