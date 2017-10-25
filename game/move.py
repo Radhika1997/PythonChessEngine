@@ -102,7 +102,7 @@ class PawnAttackMove(AttackMove):
 class PawnEnPassantAttackMove(PawnAttackMove):
 
     def __init__(self, board, moved_piece, destination_coordinate, attacked_piece):
-        AttackMove.__init__(self, board, moved_piece, destination_coordinate, attacked_piece)
+        PawnAttackMove.__init__(self, board, moved_piece, destination_coordinate, attacked_piece)
 
 
 class PawnJump(Move):
@@ -128,6 +128,7 @@ class PawnJump(Move):
         return new_board
 
 
+# TODO errors in castling move
 class CastleMove(Move):
 
     castle_rook = None

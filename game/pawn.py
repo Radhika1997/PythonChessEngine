@@ -26,15 +26,15 @@ class Pawn(Pieces):
         legal_moves = list()
         valid_moves = list()
         if self._piece_alliance == Alliance.BLACK:
-            valid_moves.append((x-1, y))
+            valid_moves.append((x-1, y, False))
             if self.get_first_move():
-                valid_moves.append((x - 2, y))
+                valid_moves.append((x - 2, y, True))
         else:
-            valid_moves.append((x + 1, y))
+            valid_moves.append((x + 1, y, False))
             if self.get_first_move():
-                valid_moves.append((x + 2, y))
+                valid_moves.append((x + 2, y, True))
 
-        for i, j in valid_moves:
+        for i, j, value in valid_moves:
             possibility = i * 8 + j
             if 64 > possibility >= 0 and (8 > i >= 0 and 8 > j >= 0):
 
@@ -42,7 +42,10 @@ class Pawn(Pieces):
                 if destination_tile.is_tile_occupied():
                     break
                 else:
-                    legal_moves.append(MajorMove(board, self, possibility))
+                    if value:
+                        legal_moves.append(PawnJump(board, self, possibility))
+                    else:
+                        legal_moves.append(MajorMove(board, self, possibility))
         attack_moves = list()
         if self._piece_alliance == Alliance.BLACK:
             attack_moves.append((x-1, y-1))
