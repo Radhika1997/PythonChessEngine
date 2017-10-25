@@ -122,11 +122,13 @@ class TilePanel(Button):
             if transition.get_move_status() == Status.DONE:
                 self.parent.board = transition.get_transition_board()
                 if not self.parent.board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
-                    path = self.parent.board.get_tile(destination_coordinate).get_pieces().set_path(
-                        self.parent.board.get_tile(destination_coordinate).get_pieces().get_piece_alliance(),
-                        self.parent.board.get_tile(destination_coordinate).get_pieces().get_piece_type())
-                    self.set_image(path)
-                    self.parent.tile_panels[source_tile.get_tile_coordinate()].clear_widgets()
+                    for i in range(0, 64):
+                        self.parent.tile_panels[i].clear_widgets()
+                        if self.parent.board.get_tile(i).is_tile_occupied():
+                            path = self.parent.board.get_tile(i).get_pieces().set_path(
+                                self.parent.board.get_tile(i).get_pieces().get_piece_alliance(),
+                                self.parent.board.get_tile(i).get_pieces().get_piece_type())
+                            self.parent.tile_panels[i].set_image(path)
                     global move_log
                     move_log.add_move(move)
                     player = self.parent.board.get_current_player()

@@ -43,6 +43,9 @@ class Board:
     def get_current_player(self):
         return self.current_player
 
+    def get_enpassant_pawn(self):
+        return self.enpassant_pawn
+
     def get_all_legal_moves(self):
         all_moves = self.white_legal_moves
         all_moves.extend(self.black_legal_moves)

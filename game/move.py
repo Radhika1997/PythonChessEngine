@@ -119,6 +119,25 @@ class AttackMove(Move):
             else:
                 return 'kx'
 
+    def execute(self):
+
+        from board import Board
+        new_board = Board(1)
+        for piece in self.board.get_current_player().get_active_pieces():
+            if not piece.equals(self.moved_piece):
+                new_board.set_piece(piece)
+
+        for piece in self.board.get_current_player().get_opponent().get_active_pieces():
+            if not piece.equals(self.attacked_piece):
+                new_board.set_piece(piece)
+
+        self.moved_piece.set_piece_position(self.destination_coordinate)
+        self.moved_piece.set_first_move(False)
+        new_board.set_piece(self.moved_piece)
+        new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
+        new_board.set_remaining_attributes()
+        return new_board
+
 
 class PawnMove(Move):
 
