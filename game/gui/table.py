@@ -130,7 +130,8 @@ class TilePanel(Button):
                     global move_log
                     move_log.add_move(move)
                     player = self.parent.board.get_current_player()
-                    print self.parent.board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate() + \
+                    print move.string() + \
+                        self.parent.board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate() + \
                         player.get_player_checks()
 
             else:

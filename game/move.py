@@ -1,4 +1,5 @@
-from pieces import Pieces
+from piece_type import Type
+from alliance import Alliance
 
 
 class Move:
@@ -36,6 +37,9 @@ class Move:
     def get_attacked_piece(self):
         return None
 
+    def string(self):
+        return ''
+
     def execute(self):
         from board import Board
         new_board = Board(1)
@@ -72,9 +76,6 @@ class AttackMove(Move):
         Move.__init__(self, board, moved_piece, destination_coordinate)
         self.attacked_piece = attacked_piece
 
-    def execute(self):
-        pass
-
     def is_attack(self):
         return True
 
@@ -85,6 +86,38 @@ class AttackMove(Move):
         if Move.equals(self, move) and self.attacked_piece.equals(move.get_attacked_piece()):
             return True
         return False
+
+    def string(self):
+        if self.moved_piece.get_piece_type() == Type.PAWN:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Px'
+            else:
+                return 'px'
+        elif self.moved_piece.get_piece_type() == Type.BISHOP:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Bx'
+            else:
+                return 'bx'
+        elif self.moved_piece.get_piece_type() == Type.ROOK:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Rx'
+            else:
+                return 'rx'
+        elif self.moved_piece.get_piece_type() == Type.KNIGHT:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Nx'
+            else:
+                return 'nx'
+        elif self.moved_piece.get_piece_type() == Type.QUEEN:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Qx'
+            else:
+                return 'qx'
+        elif self.moved_piece.get_piece_type() == Type.KING:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Kx'
+            else:
+                return 'kx'
 
 
 class PawnMove(Move):
