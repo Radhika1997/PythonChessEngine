@@ -46,8 +46,10 @@ class Pawn(Pieces):
                         legal_moves.append(PawnJump(board, self, possibility))
                     else:
                         if self.is_last_square(possibility, self._piece_alliance):
-                            #pass
-                            print 'hi'
+                            # TODO change implementation for under promotion
+                            pawn_move = PawnMove(board, self, possibility)
+                            pawn_move.set_promoted_piece(Type.QUEEN, possibility, self.get_piece_alliance())
+                            legal_moves.append(PawnPromotion(pawn_move))
                         else:
                             legal_moves.append(PawnMove(board, self, possibility))
         attack_moves = list()
@@ -68,7 +70,12 @@ class Pawn(Pieces):
                     alliance = piece_on_destination.get_piece_alliance()
 
                     if self._piece_alliance != alliance:
-                        legal_moves.append(PawnAttackMove(board, self, possibility, piece_on_destination))
+                        if self.is_last_square(possibility, self._piece_alliance):
+                            pawn_move = PawnAttackMove(board, self, possibility, piece_on_destination)
+                            pawn_move.set_promoted_piece(Type.QUEEN, possibility, self.get_piece_alliance())
+                            legal_moves.append(PawnPromotion(pawn_move))
+                        else:
+                            legal_moves.append(PawnAttackMove(board, self, possibility, piece_on_destination))
                 else:
                     if board.get_enpassant_pawn() is not None:
                         position = board.get_enpassant_pawn().get_piece_position()

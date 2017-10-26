@@ -7,6 +7,7 @@ class Move:
     board = None
     moved_piece = None
     destination_coordinate = None
+    promoted_piece = None
 
     def __init__(self, board, moved_piece, destination_coordinate):
         self.board = board
@@ -28,6 +29,9 @@ class Move:
     def get_current_coordinate(self):
         return self.moved_piece.get_piece_position()
 
+    def get_promoted_piece(self):
+        return self.promoted_piece
+
     def is_attack(self):
         return False
 
@@ -36,6 +40,20 @@ class Move:
 
     def get_attacked_piece(self):
         return None
+
+    def set_promoted_piece(self, piece_type, piece_position, piece_alliance):
+        if piece_type == Type.QUEEN:
+            from queen import Queen
+            self.promoted_piece = Queen(piece_position, piece_alliance)
+        elif piece_type == Type.BISHOP:
+            from bishop import Bishop
+            self.promoted_piece = Bishop(piece_position, piece_alliance)
+        elif piece_type == Type.KNIGHT:
+            from knight import Knight
+            self.promoted_piece = Knight(piece_position, piece_alliance)
+        elif piece_type == Type.ROOK:
+            from rook import Rook
+            self.promoted_piece = Rook(piece_position, piece_alliance)
 
     def string(self):
         return ''
@@ -143,6 +161,34 @@ class PawnMove(Move):
 
     def __init__(self, board, moved_piece, destination_coordinate):
         Move.__init__(self, board, moved_piece, destination_coordinate)
+
+
+class PawnPromotion(Move):
+
+    move = None
+    promoted_pawn = None
+
+    def __init__(self, move):
+        Move.__init__(self, move.board, move.moved_piece, move.destination_coordinate)
+        self.move = move
+        self.promoted_pawn = move.get_moved_piece()
+
+    def execute(self):
+        from board import Board
+        pawn_board = self.move.execute()
+        new_board = Board(1)
+        for piece in pawn_board.get_current_player().get_active_pieces():
+            if not piece.equals(self.promoted_pawn):
+                new_board.set_piece(piece)
+
+        for piece in pawn_board.get_current_player().get_opponent().get_active_pieces():
+            new_board.set_piece(piece)
+        promoted_piece = self.move.get_promoted_piece()
+        promoted_piece.set_piece_position(self.destination_coordinate)
+        new_board.set_piece(promoted_piece)
+        new_board.set_move_alliance(pawn_board.get_current_player().get_alliance())
+        new_board.set_remaining_attributes()
+        return new_board
 
 
 class PawnAttackMove(AttackMove):
