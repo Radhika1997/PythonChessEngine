@@ -284,7 +284,6 @@ class PawnJump(Move):
         return new_board
 
 
-# TODO errors in castling move
 class CastleMove(Move):
 
     castle_rook = None
@@ -330,12 +329,19 @@ class KingSideCastleMove(CastleMove):
         CastleMove.__init__(self, board, moved_piece, destination_coordinate,
                             castle_rook, castle_rook_initial, castle_rook_final)
 
+    def string(self):
+        return 'O-O'
+
 
 class QueenSideCastleMove(CastleMove):
+
     def __init__(self, board, moved_piece, destination_coordinate,
                  castle_rook, castle_rook_initial, castle_rook_final):
         CastleMove.__init__(self, board, moved_piece, destination_coordinate,
                             castle_rook, castle_rook_initial, castle_rook_final)
+
+    def string(self):
+        return 'O-O-O'
 
 
 class NoMove(Move):
