@@ -106,12 +106,7 @@ class AttackMove(Move):
         return False
 
     def string(self):
-        if self.moved_piece.get_piece_type() == Type.PAWN:
-            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
-                return 'Px'
-            else:
-                return 'px'
-        elif self.moved_piece.get_piece_type() == Type.BISHOP:
+        if self.moved_piece.get_piece_type() == Type.BISHOP:
             if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
                 return 'Bx'
             else:
@@ -138,7 +133,6 @@ class AttackMove(Move):
                 return 'kx'
 
     def execute(self):
-
         from board import Board
         new_board = Board(1)
         for piece in self.board.get_current_player().get_active_pieces():
@@ -193,8 +187,72 @@ class PawnPromotion(Move):
 
 class PawnAttackMove(AttackMove):
 
+    prev_position = None
+
     def __init__(self, board, moved_piece, destination_coordinate, attacked_piece):
         AttackMove.__init__(self, board, moved_piece, destination_coordinate, attacked_piece)
+
+    def string(self):
+        y = self.prev_position % 8
+        if y == 0:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Ax'
+            else:
+                return 'ax'
+        elif y == 1:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Bx'
+            else:
+                return 'bx'
+        elif y == 2:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Cx'
+            else:
+                return 'cx'
+        elif y == 3:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Dx'
+            else:
+                return 'dx'
+        elif y == 4:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Ex'
+            else:
+                return 'ex'
+        elif y == 5:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'fx'
+            else:
+                return 'Fx'
+        elif y == 6:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Gx'
+            else:
+                return 'gx'
+        elif y == 7:
+            if self.moved_piece.get_piece_alliance() == Alliance.WHITE:
+                return 'Hx'
+            else:
+                return 'hx'
+
+    def execute(self):
+
+        from board import Board
+        new_board = Board(1)
+        for piece in self.board.get_current_player().get_active_pieces():
+            if not piece.equals(self.moved_piece):
+                new_board.set_piece(piece)
+
+        for piece in self.board.get_current_player().get_opponent().get_active_pieces():
+            if not piece.equals(self.attacked_piece):
+                new_board.set_piece(piece)
+        self.prev_position = self.moved_piece.get_piece_position()
+        self.moved_piece.set_piece_position(self.destination_coordinate)
+        self.moved_piece.set_first_move(False)
+        new_board.set_piece(self.moved_piece)
+        new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
+        new_board.set_remaining_attributes()
+        return new_board
 
 
 class PawnEnPassantAttackMove(PawnAttackMove):
