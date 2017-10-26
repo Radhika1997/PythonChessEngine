@@ -72,6 +72,16 @@ class Pieces:
             return True
         return False
 
+    @staticmethod
+    def is_last_square(position, alliance):
+        if alliance == Alliance.WHITE:
+            if position in [63, 62, 61, 60, 59, 58, 57, 56]:
+                return True
+        elif alliance == Alliance.BLACK:
+            if position in [7, 6, 5, 4, 3, 2, 1, 0]:
+                return True
+        return False
+
     def is_king(self):
 
         if self._piece_type == Type.KING:

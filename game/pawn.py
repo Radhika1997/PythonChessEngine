@@ -45,7 +45,11 @@ class Pawn(Pieces):
                     if value:
                         legal_moves.append(PawnJump(board, self, possibility))
                     else:
-                        legal_moves.append(PawnMove(board, self, possibility))
+                        if self.is_last_square(possibility, self._piece_alliance):
+                            #pass
+                            print 'hi'
+                        else:
+                            legal_moves.append(PawnMove(board, self, possibility))
         attack_moves = list()
         if self._piece_alliance == Alliance.BLACK:
             attack_moves.append((x-1, y-1))
@@ -64,7 +68,7 @@ class Pawn(Pieces):
                     alliance = piece_on_destination.get_piece_alliance()
 
                     if self._piece_alliance != alliance:
-                        legal_moves.append(AttackMove(board, self, possibility, piece_on_destination))
+                        legal_moves.append(PawnAttackMove(board, self, possibility, piece_on_destination))
                 else:
                     if board.get_enpassant_pawn() is not None:
                         position = board.get_enpassant_pawn().get_piece_position()
