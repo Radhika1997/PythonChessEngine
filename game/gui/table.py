@@ -116,7 +116,6 @@ class TilePanel(Button):
             move = MoveCreator().create_move(self.parent.board,
                                              source_tile.get_tile_coordinate(),
                                              destination_coordinate)
-            # print destination_coordinate
             transition = self.parent.board.get_current_player().make_move(move)
             # print transition.get_move_status()
             if transition.get_move_status() == Status.DONE:

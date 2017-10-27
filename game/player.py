@@ -59,12 +59,9 @@ class Player:
                 attack_moves.append(move)
         return attack_moves
 
-    # TODO work below methods
     def no_escape_moves(self):
         for move in self._legal_moves:
-            #print move, move.moved_piece, move.board.get_current_player()
             transition = self.make_move(move)
-            #print transition.get_move_status(), transition.transition_board.get_current_player(), transition.move.moved_piece, transition.move.get_destination_coordinate()
             if transition.get_move_status() == Status.DONE:
                 return False
         return True
@@ -96,13 +93,10 @@ class Player:
             return MoveTransition(self._board, move_execute, Status.ILLEGAL_MOVE)
 
         transition_board = move_execute.execute()
-        # print len(transition_board.board_config), transition_board.board_config
         king_attacks = Player.calculate_attack_on_tile(transition_board.get_current_player().get_opponent()
                                                        .get_player_king().get_piece_position(),
                                                        transition_board.get_current_player().
                                                        get_legal_moves())
-        # print king_attacks
-
         if king_attacks:
             return MoveTransition(transition_board, move_execute, Status.LEAVES_PLAYER_IN_CHECK)
 
