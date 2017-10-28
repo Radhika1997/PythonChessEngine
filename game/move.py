@@ -358,7 +358,7 @@ class MoveCreator:
     def __init__(self):
         pass
 
-    def create_move(self,board, current_coordinate, destination_coordinate):
+    def create_move(self, board, current_coordinate, destination_coordinate):
 
         for move in board.get_all_legal_moves():
             if move.get_current_coordinate() == current_coordinate and \
