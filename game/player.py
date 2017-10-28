@@ -13,13 +13,7 @@ class Player:
 
     def __init__(self, board, legal_moves, opponent_moves):
         self._legal_moves = legal_moves
-        '''
-        for opponent_move in opponent_moves:
-            print opponent_move.moved_piece'''
         self._legal_moves.extend(self.calculate_king_castles(legal_moves, opponent_moves))
-        '''
-        for legal_move in legal_moves:
-            print legal_move.moved_piece'''
         if self.calculate_attack_on_tile(self._player_king.get_piece_position(), opponent_moves):
             self._check = True
         else:
