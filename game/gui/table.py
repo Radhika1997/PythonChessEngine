@@ -20,6 +20,33 @@ human_moved_piece = None
 source_color = None
 destination_color = None
 mode = 0
+whiteAI = None
+blackAI = None
+tile_panels = list()
+
+
+def redraw():
+    for i in range(0, 64):
+        tile_panels[i].clear_widgets()
+        if board.get_tile(i).is_tile_occupied():
+            path = board.get_tile(i).get_pieces().set_path(
+                board.get_tile(i).get_pieces().get_piece_alliance(),
+                board.get_tile(i).get_pieces().get_piece_type())
+            tile_panels[i].set_image(path)
+
+
+class Notify:
+
+    def __init__(self):
+        pass
+
+    # TODO adding dialog box
+    def update(self):
+        global board
+        if not board.get_current_player().is_checkmate() and \
+           not board.get_current_player().is_stalemate():
+            pass
+        return 'working'
 
 
 class MoveLog:
@@ -93,10 +120,11 @@ class TilePanel(Button):
     # TODO work on on_press method for better interaction
 
     def on_release(self):
-        global source_tile, destination_tile, human_moved_piece, source_color, destination_color, mode
+        global source_tile, destination_tile, human_moved_piece, source_color, \
+            destination_color, mode, board, tile_panels
         if mode == 0:
             if source_tile is None:
-                source_tile = self.parent.board.get_tile(int(self.id))
+                source_tile = board.get_tile(int(self.id))
                 human_moved_piece = source_tile.get_pieces()
                 if human_moved_piece is None:
                     source_tile = None
@@ -105,47 +133,143 @@ class TilePanel(Button):
                     self.set_color(0.074, 0.467, 0.156, 1)
 
                 if destination_color is not None:
-                    self.parent.tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
-                                                                                              destination_color[1],
-                                                                                              destination_color[2],
-                                                                                              destination_color[3])
+                    tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
+                                                                                  destination_color[1],
+                                                                                  destination_color[2],
+                                                                                  destination_color[3])
                     destination_color = None
                     destination_tile = None
 
             else:
-                destination_tile = self.parent.board.get_tile(int(self.id))
+                destination_tile = board.get_tile(int(self.id))
                 destination_coordinate = destination_tile.get_tile_coordinate()
                 destination_color = self.get_color()
-                move = MoveCreator().create_move(self.parent.board,
+                move = MoveCreator().create_move(board,
                                                  source_tile.get_tile_coordinate(),
                                                  destination_coordinate)
-                transition = self.parent.board.get_current_player().make_move(move)
+                transition = board.get_current_player().make_move(move)
                 # print transition.get_move_status()
                 if transition.get_move_status() == Status.DONE:
-                    self.parent.board = transition.get_transition_board()
-                    if not self.parent.board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
-                        for i in range(0, 64):
-                            self.parent.tile_panels[i].clear_widgets()
-                            if self.parent.board.get_tile(i).is_tile_occupied():
-                                path = self.parent.board.get_tile(i).get_pieces().set_path(
-                                    self.parent.board.get_tile(i).get_pieces().get_piece_alliance(),
-                                    self.parent.board.get_tile(i).get_pieces().get_piece_type())
-                                self.parent.tile_panels[i].set_image(path)
+                    board = transition.get_transition_board()
+                    if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                        redraw()
                         global move_log
                         move_log.add_move(move)
-                        player = self.parent.board.get_current_player()
-                        print self.parent.board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                        player = board.get_current_player()
+                        print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
                             player.get_player_checks()
 
                 else:
                     self.set_color(0.686, 0.109, 0.109, 1)
-                self.parent.tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
-                                                                                     source_color[1],
-                                                                                     source_color[2],
-                                                                                     source_color[3])
+                tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
+                                                                         source_color[1],
+                                                                         source_color[2],
+                                                                         source_color[3])
                 source_tile = None
                 human_moved_piece = None
                 source_color = None
+
+        elif mode == 1:
+            if source_tile is None:
+                source_tile = board.get_tile(int(self.id))
+                human_moved_piece = source_tile.get_pieces()
+                if human_moved_piece is None:
+                    source_tile = None
+                else:
+                    source_color = self.background_color
+                    self.set_color(0.074, 0.467, 0.156, 1)
+
+                if destination_color is not None:
+                    tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
+                                                                                  destination_color[1],
+                                                                                  destination_color[2],
+                                                                                  destination_color[3])
+                    destination_color = None
+                    destination_tile = None
+
+            else:
+                destination_tile = board.get_tile(int(self.id))
+                destination_coordinate = destination_tile.get_tile_coordinate()
+                destination_color = self.get_color()
+                move = MoveCreator().create_move(board,
+                                                 source_tile.get_tile_coordinate(),
+                                                 destination_coordinate)
+                transition = board.get_current_player().make_move(move)
+                # print transition.get_move_status()
+                if transition.get_move_status() == Status.DONE:
+                    board = transition.get_transition_board()
+                    if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                        redraw()
+                        global move_log
+                        move_log.add_move(move)
+                        player = board.get_current_player()
+                        print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                            player.get_player_checks()
+
+                else:
+                    self.set_color(0.686, 0.109, 0.109, 1)
+                tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
+                                                                         source_color[1],
+                                                                         source_color[2],
+                                                                         source_color[3])
+                source_tile = None
+                human_moved_piece = None
+                source_color = None
+                global blackAI
+                ai_board = blackAI.update()
+                board = ai_board
+                redraw()
+
+        elif mode == 2:
+            if source_tile is None:
+                source_tile = board.get_tile(int(self.id))
+                human_moved_piece = source_tile.get_pieces()
+                if human_moved_piece is None:
+                    source_tile = None
+                else:
+                    source_color = self.background_color
+                    self.set_color(0.074, 0.467, 0.156, 1)
+
+                if destination_color is not None:
+                    tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
+                                                                                  destination_color[1],
+                                                                                  destination_color[2],
+                                                                                  destination_color[3])
+                    destination_color = None
+                    destination_tile = None
+
+            else:
+                destination_tile = board.get_tile(int(self.id))
+                destination_coordinate = destination_tile.get_tile_coordinate()
+                destination_color = self.get_color()
+                move = MoveCreator().create_move(board,
+                                                 source_tile.get_tile_coordinate(),
+                                                 destination_coordinate)
+                transition = board.get_current_player().make_move(move)
+                # print transition.get_move_status()
+                if transition.get_move_status() == Status.DONE:
+                    board = transition.get_transition_board()
+                    if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                        redraw()
+                        global move_log
+                        move_log.add_move(move)
+                        player = board.get_current_player()
+                        print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                            player.get_player_checks()
+
+                else:
+                    self.set_color(0.686, 0.109, 0.109, 1)
+                tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
+                                                                         source_color[1],
+                                                                         source_color[2],
+                                                                         source_color[3])
+                source_tile = None
+                human_moved_piece = None
+                source_color = None
+                global whiteAI
+                ai_board = whiteAI.update()
+                board = ai_board
+                redraw()
 
 
 class GameLayout(GridLayout):
@@ -158,7 +282,7 @@ class GameLayout(GridLayout):
         self.cols = 8
         self.rows = 8
         self.id = 'gl'
-        global board
+        global board, tile_panels
         self.board = board
 
         for i in range(0,64):
@@ -183,6 +307,7 @@ class GameLayout(GridLayout):
 
         for tile_panel in self.tile_panels:
             self.add_widget(tile_panel)
+        tile_panels = self.tile_panels
 
     def apply_ratio(self):
         for child in self.children:
@@ -200,8 +325,25 @@ class MainScreenButton(Button):
         self.mode = kwargs['mode']
 
     def on_release(self):
-        global mode
+        global mode, blackAI, whiteAI, board
         mode = self.mode
+        if mode == 0:
+            blackAI = None
+            whiteAI = None
+        elif mode == 1:
+            blackAI = Notify()
+            whiteAI = None
+        elif mode == 2:
+            blackAI = None
+            whiteAI = Notify()
+            ai_board = whiteAI.update()
+            board = ai_board
+            redraw()
+        else:
+            whiteAI = Notify()
+            whiteAI.update()
+            blackAI = Notify()
+
         self.parent.change_screen()
 
 
