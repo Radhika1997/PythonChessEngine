@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
@@ -18,6 +19,7 @@ destination_tile = None
 human_moved_piece = None
 source_color = None
 destination_color = None
+mode = 0
 
 
 class MoveLog:
@@ -88,61 +90,62 @@ class TilePanel(Button):
                 h = h2
             child.size = w, h
 
-    # TODO work on on_press method for better interaction and errors in on_release
+    # TODO work on on_press method for better interaction
 
     def on_release(self):
-        global source_tile, destination_tile, human_moved_piece, source_color, destination_color
-        if source_tile is None:
-            source_tile = self.parent.board.get_tile(int(self.id))
-            human_moved_piece = source_tile.get_pieces()
-            if human_moved_piece is None:
+        global source_tile, destination_tile, human_moved_piece, source_color, destination_color, mode
+        if mode == 0:
+            if source_tile is None:
+                source_tile = self.parent.board.get_tile(int(self.id))
+                human_moved_piece = source_tile.get_pieces()
+                if human_moved_piece is None:
+                    source_tile = None
+                else:
+                    source_color = self.background_color
+                    self.set_color(0.074, 0.467, 0.156, 1)
+
+                if destination_color is not None:
+                    self.parent.tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
+                                                                                              destination_color[1],
+                                                                                              destination_color[2],
+                                                                                              destination_color[3])
+                    destination_color = None
+                    destination_tile = None
+
+            else:
+                destination_tile = self.parent.board.get_tile(int(self.id))
+                destination_coordinate = destination_tile.get_tile_coordinate()
+                destination_color = self.get_color()
+                move = MoveCreator().create_move(self.parent.board,
+                                                 source_tile.get_tile_coordinate(),
+                                                 destination_coordinate)
+                transition = self.parent.board.get_current_player().make_move(move)
+                # print transition.get_move_status()
+                if transition.get_move_status() == Status.DONE:
+                    self.parent.board = transition.get_transition_board()
+                    if not self.parent.board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                        for i in range(0, 64):
+                            self.parent.tile_panels[i].clear_widgets()
+                            if self.parent.board.get_tile(i).is_tile_occupied():
+                                path = self.parent.board.get_tile(i).get_pieces().set_path(
+                                    self.parent.board.get_tile(i).get_pieces().get_piece_alliance(),
+                                    self.parent.board.get_tile(i).get_pieces().get_piece_type())
+                                self.parent.tile_panels[i].set_image(path)
+                        global move_log
+                        move_log.add_move(move)
+                        player = self.parent.board.get_current_player()
+                        print self.parent.board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                            player.get_player_checks()
+
+                else:
+                    self.set_color(0.686, 0.109, 0.109, 1)
+                self.parent.tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
+                                                                                     source_color[1],
+                                                                                     source_color[2],
+                                                                                     source_color[3])
                 source_tile = None
-            else:
-                source_color = self.background_color
-                self.set_color(0.074, 0.467, 0.156, 1)
-
-            if destination_color is not None:
-                self.parent.tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
-                                                                                          destination_color[1],
-                                                                                          destination_color[2],
-                                                                                          destination_color[3])
-                destination_color = None
-                destination_tile = None
-
-        else:
-            destination_tile = self.parent.board.get_tile(int(self.id))
-            destination_coordinate = destination_tile.get_tile_coordinate()
-            destination_color = self.get_color()
-            move = MoveCreator().create_move(self.parent.board,
-                                             source_tile.get_tile_coordinate(),
-                                             destination_coordinate)
-            transition = self.parent.board.get_current_player().make_move(move)
-            # print transition.get_move_status()
-            if transition.get_move_status() == Status.DONE:
-                self.parent.board = transition.get_transition_board()
-                if not self.parent.board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
-                    for i in range(0, 64):
-                        self.parent.tile_panels[i].clear_widgets()
-                        if self.parent.board.get_tile(i).is_tile_occupied():
-                            path = self.parent.board.get_tile(i).get_pieces().set_path(
-                                self.parent.board.get_tile(i).get_pieces().get_piece_alliance(),
-                                self.parent.board.get_tile(i).get_pieces().get_piece_type())
-                            self.parent.tile_panels[i].set_image(path)
-                    global move_log
-                    move_log.add_move(move)
-                    player = self.parent.board.get_current_player()
-                    print self.parent.board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
-                        player.get_player_checks()
-
-            else:
-                self.set_color(0.686, 0.109, 0.109, 1)
-            self.parent.tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
-                                                                                 source_color[1],
-                                                                                 source_color[2],
-                                                                                 source_color[3])
-            source_tile = None
-            human_moved_piece = None
-            source_color = None
+                human_moved_piece = None
+                source_color = None
 
 
 class GameLayout(GridLayout):
@@ -186,8 +189,51 @@ class GameLayout(GridLayout):
             child.apply_ratio()
 
 
+class MainScreenButton(Button):
+
+    mode = 0
+
+    def __init__(self, **kwargs):
+        super(MainScreenButton, self).__init__(**kwargs)
+        self.size = ['150dp', '48dp']
+        self.text = kwargs['text']
+        self.mode = kwargs['mode']
+
+    def on_release(self):
+        global mode
+        mode = self.mode
+        self.parent.change_screen()
+
+
+class MainScreenLayout(BoxLayout):
+
+    def __init__(self, **kwargs):
+        super(MainScreenLayout, self).__init__(**kwargs)
+        self.id = 'ms'
+        self.orientation = 'vertical'
+        btn1 = MainScreenButton(text='Start Player vs Player', mode=0)
+        btn2 = MainScreenButton(text='Start White Player vs AI', mode=1)
+        btn3 = MainScreenButton(text='Start AI vs Black Player', mode=2)
+        btn4 = MainScreenButton(text='Start AI vs AI', mode=3)
+        self.add_widget(btn1)
+        self.add_widget(btn2)
+        self.add_widget(btn3)
+        self.add_widget(btn4)
+
+    def change_screen(self):
+        self.parent.change_screen()
+
+
 class MainScreen(Screen):
-    pass
+
+    def __init__(self, **kw):
+        super(MainScreen, self).__init__(**kw)
+        self.name = 'start'
+        main = MainScreenLayout()
+        self.add_widget(main)
+
+    def change_screen(self):
+        self.parent.current = 'game'
 
 
 class GameScreen(Screen):

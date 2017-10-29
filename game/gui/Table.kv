@@ -18,13 +18,14 @@ BoxLayout:
                 app_icon: 'game/images/icon.png'
             ActionOverflow:
             ActionButton:
-                text: 'Btn1'
+                text: 'Home'
+                on_press: sm.current = 'main'
             ActionButton:
-                text: 'Btn2'
+                text: 'Undo'
             ActionButton:
-                text: 'Btn3'
+                text: 'Redo'
             ActionButton:
-                text: 'Btn4'
+                text: 'Restart'
             ActionGroup:
                 text: 'Drop'
                 ActionButton:
@@ -47,21 +48,16 @@ BoxLayout:
         id: sm
         transition: Factory.get('FadeTransition')()
         MainScreen:
-            name: 'start'
+            name: 'main'
+            id : ms
             canvas.before:
                 Color:
                     rgb: 0.15, 0.15, 0.15
                 Rectangle:
                     size: self.size
 
-            AnchorLayout:
-                Button:
-                    size_hint: None, None
-                    size: '150dp', '48dp'
-                    text: 'Start'
-                    on_release: sm.current = 'game'
-
         GameScreen:
+            name: 'game'
             id: gs
             BoxLayout:
                 orientation: 'vertical'
