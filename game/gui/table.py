@@ -9,10 +9,12 @@ from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
+from game.engine.minimax import MiniMax
 Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import NumericProperty
 
+# TODO undo, restart, alliance issues, game over issues
 source_tile = None
 board = Board(0)
 destination_tile = None
@@ -40,13 +42,20 @@ class Notify:
     def __init__(self):
         pass
 
-    # TODO adding dialog box
+    # TODO adding dialog box and create thread
     def update(self):
         global board
         if not board.get_current_player().is_checkmate() and \
            not board.get_current_player().is_stalemate():
-            pass
-        return 'working'
+            minimax = MiniMax(2)
+            best_move = minimax.execute(board)
+            transition = board.get_current_player().make_move(best_move)
+            new_board = transition.get_transition_board()
+            move_log.add_move(best_move)
+            player = new_board.get_current_player()
+            print new_board.get_tile(best_move.get_destination_coordinate()).get_pieces().get_chess_coordinate(best_move.string()) + \
+                  player.get_player_checks()
+            return new_board
 
 
 class MoveLog:
@@ -270,6 +279,10 @@ class TilePanel(Button):
                 ai_board = whiteAI.update()
                 board = ai_board
                 redraw()
+                move_log.add_move(move)
+                player = board.get_current_player()
+                print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                      player.get_player_checks()
 
 
 class GameLayout(GridLayout):
