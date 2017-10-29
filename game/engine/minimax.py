@@ -31,7 +31,7 @@ class MiniMax(MoveStrategy):
                 if board.get_current_player().get_alliance() == Alliance.WHITE:
                     current_value = self.min(move_transition.get_transition_board(), self.search_depth - 1)
                 else:
-                    current_value = self.min(move_transition.get_transition_board(), self.search_depth - 1)
+                    current_value = self.max(move_transition.get_transition_board(), self.search_depth - 1)
 
                 if board.get_current_player().get_alliance() == Alliance.WHITE and \
                    current_value >= highest_value:
@@ -39,7 +39,7 @@ class MiniMax(MoveStrategy):
                     best_move = move
                 elif board.get_current_player().get_alliance() == Alliance.BLACK and \
                      current_value <= lowest_value:
-                    highest_value = current_value
+                    lowest_value = current_value
                     best_move = move
 
         execution_time = time.time() - start_time

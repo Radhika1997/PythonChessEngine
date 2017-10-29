@@ -34,7 +34,7 @@ class TestBoard(TestCase):
         from game.engine.minimax import MiniMax
         strategy = MiniMax(4)
         move = strategy.execute(move_transition_3.get_transition_board())
-        best_move = MoveCreator().create_move(move_transition_3.get_transition_board(), 60, 31)
+        best_move = MoveCreator().create_move(move_transition_3.get_transition_board(), 59, 31)
         self.assertEqual(move, best_move)
 
 
