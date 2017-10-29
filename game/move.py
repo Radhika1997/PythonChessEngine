@@ -55,6 +55,26 @@ class Move:
             from rook import Rook
             self.promoted_piece = Rook(piece_position, piece_alliance)
 
+    def create_new_piece(self, piece, position):
+        if piece.get_piece_type() == Type.PAWN:
+            from pawn import Pawn
+            return Pawn(position, piece.get_piece_alliance())
+        elif piece.get_piece_type() == Type.QUEEN:
+            from queen import Queen
+            return Queen(position, piece.get_piece_alliance())
+        elif piece.get_piece_type() == Type.BISHOP:
+            from bishop import Bishop
+            return Bishop(position, piece.get_piece_alliance())
+        elif piece.get_piece_type() == Type.KNIGHT:
+            from knight import Knight
+            return Knight(position, piece.get_piece_alliance())
+        elif piece.get_piece_type() == Type.ROOK:
+            from rook import Rook
+            return Rook(position, piece.get_piece_alliance())
+        elif piece.get_piece_type() == Type.KING:
+            from king import King
+            return King(position, piece.get_piece_alliance())
+
     def string(self):
         return ''
 
@@ -69,9 +89,9 @@ class Move:
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
             new_board.set_piece(piece)
 
-        self.moved_piece.set_piece_position(self.destination_coordinate)
-        self.moved_piece.set_first_move(False)
-        new_board.set_piece(self.moved_piece)
+        new_piece = self.create_new_piece(self.moved_piece, self.destination_coordinate)
+        new_piece.set_first_move(False)
+        new_board.set_piece(new_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
         return new_board
@@ -140,9 +160,9 @@ class AttackMove(Move):
             if not piece.equals(self.attacked_piece):
                 new_board.set_piece(piece)
 
-        self.moved_piece.set_piece_position(self.destination_coordinate)
-        self.moved_piece.set_first_move(False)
-        new_board.set_piece(self.moved_piece)
+        new_piece = self.create_new_piece(self.moved_piece, self.destination_coordinate)
+        new_piece.set_first_move(False)
+        new_board.set_piece(new_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
         return new_board
@@ -244,9 +264,9 @@ class PawnAttackMove(AttackMove):
             if not piece.equals(self.attacked_piece):
                 new_board.set_piece(piece)
         self.prev_position = self.moved_piece.get_piece_position()
-        self.moved_piece.set_piece_position(self.destination_coordinate)
-        self.moved_piece.set_first_move(False)
-        new_board.set_piece(self.moved_piece)
+        new_piece = self.create_new_piece(self.moved_piece, self.destination_coordinate)
+        new_piece.set_first_move(False)
+        new_board.set_piece(new_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
         return new_board
@@ -273,9 +293,10 @@ class PawnJump(Move):
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
             new_board.set_piece(piece)
 
-        self.moved_piece.set_piece_position(self.destination_coordinate)
-        new_board.set_piece(self.moved_piece)
-        new_board.set_enpassant_pawn(self.moved_piece)
+        new_piece = self.create_new_piece(self.moved_piece, self.destination_coordinate)
+        new_piece.set_first_move(False)
+        new_board.set_piece(new_piece)
+        new_board.set_enpassant_pawn(new_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
         return new_board
@@ -310,10 +331,11 @@ class CastleMove(Move):
         for piece in self.board.get_current_player().get_opponent().get_active_pieces():
             new_board.set_piece(piece)
 
-        self.moved_piece.set_piece_position(self.destination_coordinate)
-        self.castle_rook.set_piece_position(self.castle_rook_final)
-        new_board.set_piece(self.moved_piece)
-        new_board.set_piece(self.castle_rook)
+        new_piece = self.create_new_piece(self.moved_piece, self.destination_coordinate)
+        new_piece.set_first_move(False)
+        new_board.set_piece(new_piece)
+        new_piece = self.create_new_piece(self.castle_rook, self.castle_rook_final)
+        new_board.set_piece(new_piece)
         new_board.set_move_alliance(self.board.get_current_player().get_opponent().get_alliance())
         new_board.set_remaining_attributes()
         return new_board
