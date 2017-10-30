@@ -14,7 +14,7 @@ Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import NumericProperty
 
-# TODO undo, restart, alliance issues, game over issues
+# TODO undo, restart, alliance issues, game over issues, flip board
 source_tile = None
 board = Board(0)
 destination_tile = None
