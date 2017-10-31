@@ -190,7 +190,7 @@ class TilePanel(Button):
                 destination_tile = board.get_tile(int(self.id))
                 destination_coordinate = destination_tile.get_tile_coordinate()
                 destination_color = self.get_color()
-                if alliance == board.get_current_player().get_alliance():
+                if alliance == human_moved_piece.get_piece_alliance():
                     move = MoveCreator().create_move(board,
                                                      source_tile.get_tile_coordinate(),
                                                      destination_coordinate)
@@ -210,7 +210,6 @@ class TilePanel(Button):
                             else:
                                 alliance = Alliance.WHITE
                     else:
-                        print 'Here'
                         self.set_color(0.686, 0.109, 0.109, 1)
 
                 else:
@@ -245,24 +244,27 @@ class TilePanel(Button):
                 destination_tile = board.get_tile(int(self.id))
                 destination_coordinate = destination_tile.get_tile_coordinate()
                 destination_color = self.get_color()
-                move = MoveCreator().create_move(board,
-                                                 source_tile.get_tile_coordinate(),
-                                                 destination_coordinate)
-                transition = board.get_current_player().make_move(move)
-                # print transition.get_move_status()
-                if transition.get_move_status() == Status.DONE:
-                    board = transition.get_transition_board()
-                    if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
-                        redraw()
-                        global move_log
-                        move_log.add_move(move)
-                        player = board.get_current_player()
-                        print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
-                            player.get_player_checks()
-                        global blackAI
-                        ai_board = blackAI.update()
-                        board = ai_board
-                        redraw()
+                if alliance == human_moved_piece.get_piece_alliance():
+                    move = MoveCreator().create_move(board,
+                                                     source_tile.get_tile_coordinate(),
+                                                     destination_coordinate)
+                    transition = board.get_current_player().make_move(move)
+                    # print transition.get_move_status()
+                    if transition.get_move_status() == Status.DONE:
+                        board = transition.get_transition_board()
+                        if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                            redraw()
+                            global move_log
+                            move_log.add_move(move)
+                            player = board.get_current_player()
+                            print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                                player.get_player_checks()
+                            global blackAI
+                            ai_board = blackAI.update()
+                            board = ai_board
+                            redraw()
+                    else:
+                        self.set_color(0.686, 0.109, 0.109, 1)
 
                 else:
                     self.set_color(0.686, 0.109, 0.109, 1)
@@ -296,24 +298,28 @@ class TilePanel(Button):
                 destination_tile = board.get_tile(int(self.id))
                 destination_coordinate = destination_tile.get_tile_coordinate()
                 destination_color = self.get_color()
-                move = MoveCreator().create_move(board,
-                                                 source_tile.get_tile_coordinate(),
-                                                 destination_coordinate)
-                transition = board.get_current_player().make_move(move)
-                # print transition.get_move_status()
-                if transition.get_move_status() == Status.DONE:
-                    board = transition.get_transition_board()
-                    if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
-                        redraw()
-                        global move_log
-                        move_log.add_move(move)
-                        player = board.get_current_player()
-                        print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
-                            player.get_player_checks()
-                        global whiteAI
-                        ai_board = whiteAI.update()
-                        board = ai_board
-                        redraw()
+                if alliance == human_moved_piece.get_piece_alliance():
+                    move = MoveCreator().create_move(board,
+                                                     source_tile.get_tile_coordinate(),
+                                                     destination_coordinate)
+                    transition = board.get_current_player().make_move(move)
+                    # print transition.get_move_status()
+                    if transition.get_move_status() == Status.DONE:
+                        board = transition.get_transition_board()
+                        if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
+                            redraw()
+                            global move_log
+                            move_log.add_move(move)
+                            player = board.get_current_player()
+                            print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
+                                player.get_player_checks()
+                            global whiteAI
+                            ai_board = whiteAI.update()
+                            board = ai_board
+                            redraw()
+
+                    else:
+                        self.set_color(0.686, 0.109, 0.109, 1)
                 else:
                     self.set_color(0.686, 0.109, 0.109, 1)
                 tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
@@ -389,6 +395,8 @@ class MainScreenButton(Button):
             blackAI = Notify()
             whiteAI = None
         elif mode == 2:
+            global alliance
+            alliance = Alliance.BLACK
             blackAI = None
             whiteAI = Notify()
             ai_board = whiteAI.update()
