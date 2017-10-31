@@ -164,6 +164,15 @@ class BoardLog:
             board = self.board_log[self.current]
             redraw()
 
+    def redo(self):
+        self.current += 1
+        global board
+        if self.current < self.length:
+            board = self.board_log[self.current]
+            redraw()
+        else:
+            self.current = self.length-1
+
 
 board_log = BoardLog()
 
@@ -301,7 +310,6 @@ class TilePanel(Button):
                             redraw()
                             global move_log, board_log
                             move_log.add_move(move)
-                            board_log.add(board)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
                                 player.get_player_checks()
@@ -309,6 +317,7 @@ class TilePanel(Button):
                             ai_board = blackAI.update()
                             board = ai_board
                             redraw()
+                            board_log.add(board)
                     else:
                         self.set_color(0.686, 0.109, 0.109, 1)
 
@@ -356,7 +365,6 @@ class TilePanel(Button):
                             redraw()
                             global move_log, board_log
                             move_log.add_move(move)
-                            board_log.add(board)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
                                 player.get_player_checks()
@@ -364,6 +372,7 @@ class TilePanel(Button):
                             ai_board = whiteAI.update()
                             board = ai_board
                             redraw()
+                            board_log.add(board)
 
                     else:
                         self.set_color(0.686, 0.109, 0.109, 1)
@@ -525,14 +534,24 @@ class Table(App):
         exit(0)
 
     def restart(self):
-        global board
+        global board, board_log
         print 'Game restarts'
         board = Board(0)
+        board_log = BoardLog()
         redraw()
 
     def undo(self):
         global board_log, mode, alliance
         board_log.undo()
+        if mode == 0:
+            if alliance == Alliance.WHITE:
+                alliance = Alliance.BLACK
+            else:
+                alliance = Alliance.WHITE
+
+    def redo(self):
+        global board_log, mode, alliance
+        board_log.redo()
         if mode == 0:
             if alliance == Alliance.WHITE:
                 alliance = Alliance.BLACK
