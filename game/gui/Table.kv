@@ -22,10 +22,12 @@ BoxLayout:
                 on_press: sm.current = 'main'
             ActionButton:
                 text: 'Undo'
+                on_press: app.undo()
             ActionButton:
                 text: 'Redo'
             ActionButton:
                 text: 'Restart'
+                on_press: app.restart()
             ActionGroup:
                 text: 'Drop'
                 ActionButton:

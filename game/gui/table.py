@@ -130,6 +130,44 @@ class MoveLog:
 move_log = MoveLog()
 
 
+class BoardLog:
+
+    board_log = list()
+    length = None
+    current = None
+
+    def __init__(self):
+        self.current = -1
+        self.length = 0
+
+    def add(self, new_board):
+        if self.current == self.length-1:
+            self.board_log.append(new_board)
+            self.current += 1
+            self.length += 1
+        else:
+            for i in range(self.current+1, self.length):
+                self.remove()
+            self.board_log.append(new_board)
+            self.current += 1
+            self.length = self.current + 1
+
+    def remove(self):
+        del self.board_log[-1]
+
+    def undo(self):
+        self.current -= 1
+        global board
+        if self.current < 0:
+            self.current = -1
+        else:
+            board = self.board_log[self.current]
+            redraw()
+
+
+board_log = BoardLog()
+
+
 class TilePanel(Button):
     ratio = NumericProperty(1 / 1)
     default_path = "game/images/pieces/"
@@ -206,8 +244,9 @@ class TilePanel(Button):
                         board = transition.get_transition_board()
                         if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
                             redraw()
-                            global move_log
+                            global move_log, board_log
                             move_log.add_move(move)
+                            board_log.add(board)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
                                 player.get_player_checks()
@@ -260,8 +299,9 @@ class TilePanel(Button):
                         board = transition.get_transition_board()
                         if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
                             redraw()
-                            global move_log
+                            global move_log, board_log
                             move_log.add_move(move)
+                            board_log.add(board)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
                                 player.get_player_checks()
@@ -314,8 +354,9 @@ class TilePanel(Button):
                         board = transition.get_transition_board()
                         if not board.get_tile(source_tile.get_tile_coordinate()).is_tile_occupied():
                             redraw()
-                            global move_log
+                            global move_log, board_log
                             move_log.add_move(move)
+                            board_log.add(board)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
                                 player.get_player_checks()
@@ -392,7 +433,7 @@ class MainScreenButton(Button):
         self.mode = kwargs['mode']
 
     def on_release(self):
-        global mode, blackAI, whiteAI, board
+        global mode, blackAI, whiteAI, board, board_log
         mode = self.mode
         restart()
         if mode == 0:
@@ -412,7 +453,7 @@ class MainScreenButton(Button):
         else:
             whiteAI = Notify()
             blackAI = Notify()
-
+        board_log.add(board)
         self.parent.change_screen()
 
 
@@ -488,3 +529,12 @@ class Table(App):
         print 'Game restarts'
         board = Board(0)
         redraw()
+
+    def undo(self):
+        global board_log, mode, alliance
+        board_log.undo()
+        if mode == 0:
+            if alliance == Alliance.WHITE:
+                alliance = Alliance.BLACK
+            else:
+                alliance = Alliance.WHITE
