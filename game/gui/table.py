@@ -14,7 +14,7 @@ Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import NumericProperty
 
-# TODO undo, alliance issues, game over issues, flip board
+# TODO game over issues, flip board
 source_tile = None
 board = Board(0)
 destination_tile = None
@@ -37,16 +37,18 @@ def redraw():
                 board.get_tile(i).get_pieces().get_piece_type())
             tile_panels[i].set_image(path)
 
-
+# TODO apply threading to calculate in background and notify in foreground only when calculation is done
 def AIvsAI(turn):
-    if turn == 0:
-        if white():
-            AIvsAI(1)
-        print 'White AI lost'
-    else:
-        if black():
-            AIvsAI(0)
-        print 'Black AI lost'
+    while(not board.get_current_player().is_checkmate() and
+          not board.get_current_player().is_stalemate()):
+        if turn == 0:
+            white()
+            turn = 1
+            print 'White AI lost'
+        else:
+            black()
+            turn = 0
+            print 'Black AI lost'
 
 
 def white():
@@ -462,8 +464,12 @@ class MainScreenButton(Button):
         else:
             whiteAI = Notify()
             blackAI = Notify()
+            Clock.schedule_interval(self.AIcallback, 3)
         board_log.add(board)
         self.parent.change_screen()
+
+    def AIcallback(self,dt):
+        white()
 
 
 class MainScreenLayout(BoxLayout):
