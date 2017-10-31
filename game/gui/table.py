@@ -14,7 +14,7 @@ Window.size = (800, 600)
 from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import NumericProperty
 
-# TODO undo, restart, alliance issues, game over issues, flip board
+# TODO undo, alliance issues, game over issues, flip board
 source_tile = None
 board = Board(0)
 destination_tile = None
@@ -69,6 +69,12 @@ def black():
         board = new_board
         redraw()
         return True
+
+
+def restart():
+    global board
+    board = Board(0)
+    redraw()
 
 
 class Notify:
@@ -388,6 +394,7 @@ class MainScreenButton(Button):
     def on_release(self):
         global mode, blackAI, whiteAI, board
         mode = self.mode
+        restart()
         if mode == 0:
             blackAI = None
             whiteAI = None
@@ -475,3 +482,9 @@ class Table(App):
 
     def btn_exit(self):
         exit(0)
+
+    def restart(self):
+        global board
+        print 'Game restarts'
+        board = Board(0)
+        redraw()
