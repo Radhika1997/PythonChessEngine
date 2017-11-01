@@ -28,7 +28,7 @@ class Knight(Pieces):
             possibility = i * 8 + j
             if 64 > possibility >= 0 and (8 > i >= 0 and 8 > j >= 0):
                 destination_tile = board.get_tile(possibility)
-                if destination_tile.is_tile_occupied(): #change required
+                if destination_tile.is_tile_occupied():  # change required
                     piece_on_destination = destination_tile.get_pieces()
                     alliance = piece_on_destination.get_piece_alliance()
 

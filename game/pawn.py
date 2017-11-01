@@ -82,5 +82,8 @@ class Pawn(Pieces):
                         alliance = board.get_enpassant_pawn().get_piece_alliance()
                         if position + 8 == possibility or position - 8 == possibility:
                             if self._piece_alliance != alliance:
-                                legal_moves.append(PawnEnPassantAttackMove(board, self, possibility, board.get_enpassant_pawn()))
+                                legal_moves.append(PawnEnPassantAttackMove(board,
+                                                                           self,
+                                                                           possibility,
+                                                                           board.get_enpassant_pawn()))
         return legal_moves

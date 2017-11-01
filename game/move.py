@@ -55,7 +55,8 @@ class Move:
             from rook import Rook
             self.promoted_piece = Rook(piece_position, piece_alliance)
 
-    def create_new_piece(self, piece, position):
+    @staticmethod
+    def create_new_piece(piece, position):
         if piece.get_piece_type() == Type.PAWN:
             from pawn import Pawn
             return Pawn(position, piece.get_piece_alliance())
@@ -380,7 +381,8 @@ class MoveCreator:
     def __init__(self):
         pass
 
-    def create_move(self, board, current_coordinate, destination_coordinate):
+    @staticmethod
+    def create_move(board, current_coordinate, destination_coordinate):
 
         for move in board.get_all_legal_moves():
             if move.get_current_coordinate() == current_coordinate and \

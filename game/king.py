@@ -5,7 +5,7 @@ from piece_type import Type
 
 class King(Pieces):
     def __init__(self, piece_position, piece_alliance):
-        Pieces.__init__(self, piece_position, piece_alliance,Type.KING)
+        Pieces.__init__(self, piece_position, piece_alliance, Type.KING)
 
     @staticmethod
     def __king_valid_moves(x, y):
@@ -27,7 +27,7 @@ class King(Pieces):
         valid_moves_direction8.append((x - 1, y - 1))
 
         return valid_moves_direction1, valid_moves_direction2, valid_moves_direction3, valid_moves_direction4, \
-               valid_moves_direction5, valid_moves_direction6, valid_moves_direction7, valid_moves_direction8
+            valid_moves_direction5, valid_moves_direction6, valid_moves_direction7, valid_moves_direction8
 
     def calculate_legal_moves(self, board):
         x, y = self._calculate_coordinates()

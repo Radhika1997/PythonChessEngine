@@ -13,10 +13,11 @@ class Tile:
     def get_tile_coordinate(self):
         return self._tile_coordinate
 
-    def __create_all_possible_empty_tiles(self):
+    @staticmethod
+    def __create_all_possible_empty_tiles():
         empty_tile_dict = dict()
 
-        for i in range(0,64):
+        for i in range(0, 64):
             empty_tile_dict[i] = EmptyTile(i)
 
         return empty_tile_dict
@@ -29,7 +30,6 @@ class Tile:
 
 
 class EmptyTile(Tile):
-
     def __init__(self, coordinate):
         Tile.__init__(self, coordinate)
 
@@ -41,7 +41,6 @@ class EmptyTile(Tile):
 
 
 class OccupiedTile(Tile):
-
     __piece_on_tile = None
 
     def __init__(self, coordinate, piece_on_tile):
@@ -53,4 +52,3 @@ class OccupiedTile(Tile):
 
     def get_pieces(self):
         return self.__piece_on_tile
-

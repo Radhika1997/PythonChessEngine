@@ -3,7 +3,6 @@ from piece_type import Type
 
 
 class Pieces:
-
     piece_position = None
     _piece_type = None
     _piece_alliance = None
@@ -21,10 +20,10 @@ class Pieces:
     def _calculate_coordinates(self):
         x = self.piece_position / 8
         y = self.piece_position % 8
-        return x,y
+        return x, y
 
     def get_chess_coordinate(self, message):
-        x,y = self._calculate_coordinates()
+        x, y = self._calculate_coordinates()
         chess_coordinate = None
         alliance = None
         if self._piece_alliance == Alliance.WHITE:
@@ -51,7 +50,7 @@ class Pieces:
                 chess_coordinate = 'g'
             elif y == 7:
                 chess_coordinate = 'h'
-            return alliance + message + chess_coordinate + str(x+1)
+            return alliance + message + chess_coordinate + str(x + 1)
 
     def get_piece_alliance(self):
         return self._piece_alliance
@@ -70,8 +69,8 @@ class Pieces:
 
     def equals(self, piece):
         if self.get_piece_alliance() == piece.get_piece_alliance() and \
-           self.get_piece_type() == piece.get_piece_type() and \
-           self.get_piece_position() == piece.get_piece_position():
+                        self.get_piece_type() == piece.get_piece_type() and \
+                        self.get_piece_position() == piece.get_piece_position():
             return True
         return False
 
@@ -95,7 +94,8 @@ class Pieces:
     def set_first_move(self, first_move):
         self.first_move = first_move
 
-    def set_path(self, alliance, piece_type):
+    @staticmethod
+    def set_path(alliance, piece_type):
         if Alliance.BLACK == alliance:
             if Type.BISHOP == piece_type:
                 return 'BB.gif'
@@ -122,5 +122,3 @@ class Pieces:
                 return 'WQ.gif'
             elif Type.ROOK == piece_type:
                 return 'WR.gif'
-
-

@@ -10,9 +10,10 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.window import Window
 from game.engine.minimax import MiniMax
-Window.size = (800, 600)
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty
+
+Window.size = (800, 600)
 
 # TODO game over issues, flip board
 source_tile = None
@@ -37,10 +38,12 @@ def redraw():
                 board.get_tile(i).get_pieces().get_piece_type())
             tile_panels[i].set_image(path)
 
+
 # TODO apply threading to calculate in background and notify in foreground only when calculation is done
+# noinspection PyPep8Naming
 def AIvsAI(turn):
-    while(not board.get_current_player().is_checkmate() and
-          not board.get_current_player().is_stalemate()):
+    while (not board.get_current_player().is_checkmate() and
+               not board.get_current_player().is_stalemate()):
         if turn == 0:
             white()
             turn = 1
@@ -80,23 +83,24 @@ def restart():
 
 
 class Notify:
-
     def __init__(self):
         pass
 
     # TODO adding dialog box and create thread
-    def update(self):
+    @staticmethod
+    def update():
         global board
         if not board.get_current_player().is_checkmate() and \
-           not board.get_current_player().is_stalemate():
+                not board.get_current_player().is_stalemate():
             minimax = MiniMax(2)
             best_move = minimax.execute(board)
             transition = board.get_current_player().make_move(best_move)
             new_board = transition.get_transition_board()
             move_log.add_move(best_move)
             player = new_board.get_current_player()
-            print new_board.get_tile(best_move.get_destination_coordinate()).get_pieces().get_chess_coordinate(best_move.string()) + \
-                player.get_player_checks()
+            print new_board.get_tile(best_move.get_destination_coordinate()). \
+                      get_pieces().get_chess_coordinate(best_move.string()) + \
+                  player.get_player_checks()
             return new_board
         else:
             print 'Game ends'
@@ -104,7 +108,6 @@ class Notify:
 
 
 class MoveLog:
-
     moves = list()
 
     def __init__(self):
@@ -133,7 +136,6 @@ move_log = MoveLog()
 
 
 class BoardLog:
-
     board_log = list()
     length = None
     current = None
@@ -143,12 +145,12 @@ class BoardLog:
         self.length = 0
 
     def add(self, new_board):
-        if self.current == self.length-1:
+        if self.current == self.length - 1:
             self.board_log.append(new_board)
             self.current += 1
             self.length += 1
         else:
-            for i in range(self.current+1, self.length):
+            for i in range(self.current + 1, self.length):
                 self.remove()
             self.board_log.append(new_board)
             self.current += 1
@@ -173,7 +175,7 @@ class BoardLog:
             board = self.board_log[self.current]
             redraw()
         else:
-            self.current = self.length-1
+            self.current = self.length - 1
 
 
 board_log = BoardLog()
@@ -194,7 +196,7 @@ class TilePanel(Button):
 
     def set_id(self, index):
         self.id = str(index)
-        # self.text = str(index)
+        self.text = str(index)
 
     def set_image(self, path):
         self.add_widget(Image(source=self.default_path + path))
@@ -259,8 +261,9 @@ class TilePanel(Button):
                             move_log.add_move(move)
                             board_log.add(board)
                             player = board.get_current_player()
-                            print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
-                                player.get_player_checks()
+                            print board.get_tile(destination_coordinate).get_pieces(). \
+                                      get_chess_coordinate(move.string()) + \
+                                  player.get_player_checks()
                             if alliance == Alliance.WHITE:
                                 alliance = Alliance.BLACK
                             else:
@@ -313,8 +316,9 @@ class TilePanel(Button):
                             global move_log, board_log
                             move_log.add_move(move)
                             player = board.get_current_player()
-                            print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
-                                player.get_player_checks()
+                            print board.get_tile(destination_coordinate).get_pieces(). \
+                                      get_chess_coordinate(move.string()) + \
+                                  player.get_player_checks()
                             global blackAI
                             ai_board = blackAI.update()
                             board = ai_board
@@ -368,8 +372,9 @@ class TilePanel(Button):
                             global move_log, board_log
                             move_log.add_move(move)
                             player = board.get_current_player()
-                            print board.get_tile(destination_coordinate).get_pieces().get_chess_coordinate(move.string()) + \
-                                player.get_player_checks()
+                            print board.get_tile(destination_coordinate).get_pieces(). \
+                                      get_chess_coordinate(move.string()) + \
+                                  player.get_player_checks()
                             global whiteAI
                             ai_board = whiteAI.update()
                             board = ai_board
@@ -404,16 +409,16 @@ class GameLayout(GridLayout):
         global board, tile_panels
         self.board = board
 
-        for i in range(0,64):
+        for i in range(0, 64):
             self.tile_panels.append(TilePanel())
             self.tile_panels[i].set_id(i)
-            if i<8:
-                if i%2 == 0:
+            if i < 8:
+                if i % 2 == 0:
                     self.tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
                 else:
                     self.tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
             else:
-                if self.tile_panels[i-8].get_color() == [0.466, 0.345, 0.156, 1]:
+                if self.tile_panels[i - 8].get_color() == [0.466, 0.345, 0.156, 1]:
                     self.tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
                 else:
                     self.tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
@@ -434,7 +439,6 @@ class GameLayout(GridLayout):
 
 
 class MainScreenButton(Button):
-
     mode = 0
 
     def __init__(self, **kwargs):
@@ -468,12 +472,13 @@ class MainScreenButton(Button):
         board_log.add(board)
         self.parent.change_screen()
 
-    def AIcallback(self,dt):
+    # noinspection PyPep8Naming
+    @staticmethod
+    def AIcallback(dt):
         white()
 
 
 class MainScreenLayout(BoxLayout):
-
     def __init__(self, **kwargs):
         super(MainScreenLayout, self).__init__(**kwargs)
         self.id = 'ms'
@@ -492,7 +497,6 @@ class MainScreenLayout(BoxLayout):
 
 
 class MainScreen(Screen):
-
     def __init__(self, **kw):
         super(MainScreen, self).__init__(**kw)
         self.name = 'start'
@@ -523,7 +527,7 @@ class GameScreen(Screen):
         child.size = w, h
         child.apply_ratio()
 
-    def my_callback(self,dt):
+    def my_callback(self, dt):
         for child in self.children:
             for every_child in child.children:
                 if every_child.id == 'gl':
@@ -535,18 +539,20 @@ class ScreenManagement(ScreenManager):
 
 
 class Table(App):
-
-    def btn_exit(self):
+    @staticmethod
+    def btn_exit():
         exit(0)
 
-    def restart(self):
+    @staticmethod
+    def restart():
         global board, board_log
         print 'Game restarts'
         board = Board(0)
         board_log = BoardLog()
         redraw()
 
-    def undo(self):
+    @staticmethod
+    def undo():
         global board_log, mode, alliance
         board_log.undo()
         if mode == 0:
@@ -555,7 +561,8 @@ class Table(App):
             else:
                 alliance = Alliance.WHITE
 
-    def redo(self):
+    @staticmethod
+    def redo():
         global board_log, mode, alliance
         board_log.redo()
         if mode == 0:

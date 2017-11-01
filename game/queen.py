@@ -28,7 +28,7 @@ class Queen(Pieces):
             valid_moves_direction8.append((x - i, y - i))
 
         return valid_moves_direction1, valid_moves_direction2, valid_moves_direction3, valid_moves_direction4, \
-               valid_moves_direction5, valid_moves_direction6, valid_moves_direction7, valid_moves_direction8
+            valid_moves_direction5, valid_moves_direction6, valid_moves_direction7, valid_moves_direction8
 
     def calculate_legal_moves(self, board):
         x, y = self._calculate_coordinates()

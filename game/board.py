@@ -1,10 +1,9 @@
 from alliance import Alliance
 from tile import *
-from player import BlackPlayer,WhitePlayer
+from player import BlackPlayer, WhitePlayer
 
 
 class Board:
-
     board_config = dict()
     move_alliance = None
     game_board = list()
@@ -88,7 +87,7 @@ class Board:
     def set_move_alliance(self, move_alliance):
         self.move_alliance = move_alliance
 
-    def set_enpassant_pawn(self,piece):
+    def set_enpassant_pawn(self, piece):
         self.enpassant_pawn = piece
 
     def create_game_board(self):
@@ -144,6 +143,6 @@ class Board:
 
         self.set_move_alliance(Alliance.WHITE)
 
-# tile method to be changed changes to be made in knight class
+    # tile method to be changed changes to be made in knight class
     def get_tile(self, coordinate):
         return self.game_board[coordinate]
