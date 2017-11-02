@@ -1,4 +1,4 @@
-# MyChessEngine
+# PythonChessEngine (PCE)
 Making a python based chess engine for experimenting and learning. This is based on a java tutorial on youtube by software architecture 
 & design.
 
