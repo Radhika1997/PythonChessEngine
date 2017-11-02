@@ -1,4 +1,3 @@
-import kivy
 from game.board import Board
 from game.move import MoveCreator
 from game.move_status import Status
