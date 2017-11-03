@@ -15,7 +15,7 @@ from kivy.properties import NumericProperty
 
 Window.size = (800, 600)
 
-# TODO game over issues, flip board
+# TODO game over issues
 source_tile = None
 board = Board(0)
 destination_tile = None
@@ -26,24 +26,84 @@ mode = 0
 whiteAI = None
 blackAI = None
 tile_panels = list()
+flipped = False
 alliance = Alliance.WHITE
 
 
 def redraw():
     for i in range(0, 64):
         tile_panels[i].clear_widgets()
-        if board.get_tile(i).is_tile_occupied():
-            path = board.get_tile(i).get_pieces().set_path(
-                board.get_tile(i).get_pieces().get_piece_alliance(),
-                board.get_tile(i).get_pieces().get_piece_type())
-            tile_panels[i].set_image(path)
+    draw_board(1)
+
+
+def draw_board(val):
+    normal = [56, 57, 58, 59, 60, 61, 62, 63,
+              48, 49, 50, 51, 52, 53, 54, 55,
+              40, 41, 42, 43, 44, 45, 46, 47,
+              32, 33, 34, 35, 36, 37, 38, 39,
+              24, 25, 26, 27, 28, 29, 30, 31,
+              16, 17, 18, 19, 20, 21, 22, 23,
+              8, 9, 10, 11, 12, 13, 14, 15,
+              0, 1, 2, 3, 4, 5, 6, 7]
+    flip = [0, 1, 2, 3, 4, 5, 6, 7,
+            8, 9, 10, 11, 12, 13, 14, 15,
+            16, 17, 18, 19, 20, 21, 22, 23,
+            24, 25, 26, 27, 28, 29, 30, 31,
+            32, 33, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 44, 45, 46, 47,
+            48, 49, 50, 51, 52, 53, 54, 55,
+            56, 57, 58, 59, 60, 61, 62, 63]
+    global flipped
+    for i in range(0, 64):
+        if not flipped:
+            tile_panels[i].set_id(normal[i])
+            dark = (0.466, 0.345, 0.156, 1)
+            light = (0.976, 0.749, 0.407, 1)
+            if val == 0:
+                if i < 8:
+                    if i % 2 == 0:
+                        tile_panels[i].set_color(light[0], light[1], light[2], light[3])
+                    else:
+                        tile_panels[i].set_color(dark[0], dark[1], dark[2], dark[3])
+                else:
+                    if tile_panels[i - 8].get_color() == [light[0], light[1], light[2], light[3]]:
+                        tile_panels[i].set_color(dark[0], dark[1], dark[2], dark[3])
+                    else:
+                        tile_panels[i].set_color(light[0], light[1], light[2], light[3])
+
+            if board.get_tile(i).is_tile_occupied():
+                path = board.get_tile(i).get_pieces().set_path(
+                    board.get_tile(i).get_pieces().get_piece_alliance(),
+                    board.get_tile(i).get_pieces().get_piece_type())
+                tile_panels[normal[i]].set_image(path)
+        else:
+            tile_panels[i].set_id(flip[i])
+            dark = (0.466, 0.345, 0.156, 1)
+            light = (0.976, 0.749, 0.407, 1)
+            if val == 0:
+                if i < 8:
+                    if i % 2 == 0:
+                        tile_panels[i].set_color(dark[0], dark[1], dark[2], dark[3])
+                    else:
+                        tile_panels[i].set_color(light[0], light[1], light[2], light[3])
+                else:
+                    if tile_panels[i - 8].get_color() == [dark[0], dark[1], dark[2], dark[3]]:
+                        tile_panels[i].set_color(light[0], light[1], light[2], light[3])
+                    else:
+                        tile_panels[i].set_color(dark[0], dark[1], dark[2], dark[3])
+
+            if board.get_tile(i).is_tile_occupied():
+                path = board.get_tile(i).get_pieces().set_path(
+                    board.get_tile(i).get_pieces().get_piece_alliance(),
+                    board.get_tile(i).get_pieces().get_piece_type())
+                tile_panels[flip[i]].set_image(path)
 
 
 # TODO apply threading to calculate in background and notify in foreground only when calculation is done
 # noinspection PyPep8Naming
 def AIvsAI(turn):
     while (not board.get_current_player().is_checkmate() and
-               not board.get_current_player().is_stalemate()):
+           not board.get_current_player().is_stalemate()):
         if turn == 0:
             white()
             turn = 1
@@ -77,9 +137,11 @@ def black():
 
 
 def restart():
-    global board
+    global board, tile_panels
     board = Board(0)
-    redraw()
+    for i in range(0, 64):
+        tile_panels[i].clear_widgets()
+    draw_board(0)
 
 
 class Notify:
@@ -99,8 +161,8 @@ class Notify:
             move_log.add_move(best_move)
             player = new_board.get_current_player()
             print new_board.get_tile(best_move.get_destination_coordinate()). \
-                      get_pieces().get_chess_coordinate(best_move.string()) + \
-                  player.get_player_checks()
+                get_pieces().get_chess_coordinate(best_move.string()) + \
+                player.get_player_checks()
             return new_board
         else:
             print 'Game ends'
@@ -196,7 +258,6 @@ class TilePanel(Button):
 
     def set_id(self, index):
         self.id = str(index)
-        self.text = str(index)
 
     def set_image(self, path):
         self.add_widget(Image(source=self.default_path + path))
@@ -236,10 +297,12 @@ class TilePanel(Button):
                     self.set_color(0.074, 0.467, 0.156, 1)
 
                 if destination_color is not None:
-                    tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
-                                                                                  destination_color[1],
-                                                                                  destination_color[2],
-                                                                                  destination_color[3])
+                    for i in range(64):
+                        if int(tile_panels[i].id) == destination_tile.get_tile_coordinate():
+                            tile_panels[i].set_color(destination_color[0],
+                                                     destination_color[1],
+                                                     destination_color[2],
+                                                     destination_color[3])
                     destination_color = None
                     destination_tile = None
 
@@ -262,8 +325,8 @@ class TilePanel(Button):
                             board_log.add(board)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces(). \
-                                      get_chess_coordinate(move.string()) + \
-                                  player.get_player_checks()
+                                get_chess_coordinate(move.string()) + \
+                                player.get_player_checks()
                             if alliance == Alliance.WHITE:
                                 alliance = Alliance.BLACK
                             else:
@@ -273,10 +336,12 @@ class TilePanel(Button):
 
                 else:
                     self.set_color(0.686, 0.109, 0.109, 1)
-                tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
-                                                                         source_color[1],
-                                                                         source_color[2],
-                                                                         source_color[3])
+                for i in range(64):
+                    if int(tile_panels[i].id) == source_tile.get_tile_coordinate():
+                        tile_panels[i].set_color(source_color[0],
+                                                 source_color[1],
+                                                 source_color[2],
+                                                 source_color[3])
                 source_tile = None
                 human_moved_piece = None
                 source_color = None
@@ -292,10 +357,12 @@ class TilePanel(Button):
                     self.set_color(0.074, 0.467, 0.156, 1)
 
                 if destination_color is not None:
-                    tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
-                                                                                  destination_color[1],
-                                                                                  destination_color[2],
-                                                                                  destination_color[3])
+                    for i in range(64):
+                        if int(tile_panels[i].id) == destination_tile.get_tile_coordinate():
+                            tile_panels[i].set_color(destination_color[0],
+                                                     destination_color[1],
+                                                     destination_color[2],
+                                                     destination_color[3])
                     destination_color = None
                     destination_tile = None
 
@@ -317,8 +384,8 @@ class TilePanel(Button):
                             move_log.add_move(move)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces(). \
-                                      get_chess_coordinate(move.string()) + \
-                                  player.get_player_checks()
+                                get_chess_coordinate(move.string()) + \
+                                player.get_player_checks()
                             global blackAI
                             ai_board = blackAI.update()
                             board = ai_board
@@ -329,10 +396,12 @@ class TilePanel(Button):
 
                 else:
                     self.set_color(0.686, 0.109, 0.109, 1)
-                tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
-                                                                         source_color[1],
-                                                                         source_color[2],
-                                                                         source_color[3])
+                for i in range(64):
+                    if int(tile_panels[i].id) == source_tile.get_tile_coordinate():
+                        tile_panels[i].set_color(source_color[0],
+                                                 source_color[1],
+                                                 source_color[2],
+                                                 source_color[3])
                 source_tile = None
                 human_moved_piece = None
                 source_color = None
@@ -348,10 +417,12 @@ class TilePanel(Button):
                     self.set_color(0.074, 0.467, 0.156, 1)
 
                 if destination_color is not None:
-                    tile_panels[destination_tile.get_tile_coordinate()].set_color(destination_color[0],
-                                                                                  destination_color[1],
-                                                                                  destination_color[2],
-                                                                                  destination_color[3])
+                    for i in range(64):
+                        if int(tile_panels[i].id) == destination_tile.get_tile_coordinate():
+                            tile_panels[i].set_color(destination_color[0],
+                                                     destination_color[1],
+                                                     destination_color[2],
+                                                     destination_color[3])
                     destination_color = None
                     destination_tile = None
 
@@ -373,8 +444,8 @@ class TilePanel(Button):
                             move_log.add_move(move)
                             player = board.get_current_player()
                             print board.get_tile(destination_coordinate).get_pieces(). \
-                                      get_chess_coordinate(move.string()) + \
-                                  player.get_player_checks()
+                                get_chess_coordinate(move.string()) + \
+                                player.get_player_checks()
                             global whiteAI
                             ai_board = whiteAI.update()
                             board = ai_board
@@ -385,10 +456,12 @@ class TilePanel(Button):
                         self.set_color(0.686, 0.109, 0.109, 1)
                 else:
                     self.set_color(0.686, 0.109, 0.109, 1)
-                tile_panels[source_tile.get_tile_coordinate()].set_color(source_color[0],
-                                                                         source_color[1],
-                                                                         source_color[2],
-                                                                         source_color[3])
+                for i in range(64):
+                    if int(tile_panels[i].id) == source_tile.get_tile_coordinate():
+                        tile_panels[i].set_color(source_color[0],
+                                                 source_color[1],
+                                                 source_color[2],
+                                                 source_color[3])
                 source_tile = None
                 human_moved_piece = None
                 source_color = None
@@ -410,28 +483,10 @@ class GameLayout(GridLayout):
         self.board = board
 
         for i in range(0, 64):
-            self.tile_panels.append(TilePanel())
-            self.tile_panels[i].set_id(i)
-            if i < 8:
-                if i % 2 == 0:
-                    self.tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
-                else:
-                    self.tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
-            else:
-                if self.tile_panels[i - 8].get_color() == [0.466, 0.345, 0.156, 1]:
-                    self.tile_panels[i].set_color(0.976, 0.749, 0.407, 1)
-                else:
-                    self.tile_panels[i].set_color(0.466, 0.345, 0.156, 1)
-
-            if self.board.get_tile(i).is_tile_occupied():
-                path = self.board.get_tile(i).get_pieces().set_path(
-                    self.board.get_tile(i).get_pieces().get_piece_alliance(),
-                    self.board.get_tile(i).get_pieces().get_piece_type())
-                self.tile_panels[i].set_image(path)
-
-        for tile_panel in self.tile_panels:
+            tile_panels.append(TilePanel())
+        draw_board(0)
+        for tile_panel in tile_panels:
             self.add_widget(tile_panel)
-        tile_panels = self.tile_panels
 
     def apply_ratio(self):
         for child in self.children:
@@ -450,7 +505,7 @@ class MainScreenButton(Button):
     def on_release(self):
         global mode, blackAI, whiteAI, board, board_log
         mode = self.mode
-        restart()
+        # restart()
         if mode == 0:
             blackAI = None
             whiteAI = None
@@ -570,3 +625,12 @@ class Table(App):
                 alliance = Alliance.BLACK
             else:
                 alliance = Alliance.WHITE
+
+    @staticmethod
+    def flip():
+        global flipped
+        if flipped is True:
+            flipped = False
+        else:
+            flipped = True
+        restart()
