@@ -8,6 +8,8 @@ from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.core.window import Window
 from game.engine.minimax import MiniMax
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -144,6 +146,27 @@ def restart():
     draw_board(0)
 
 
+def exit_button(argument):
+    exit(0)
+
+
+def dialog_box(title, message):
+    content = BoxLayout(orientation='vertical')
+    content.add_widget(Label(text=message))
+    content.add_widget(Label(text=''))
+    btn1 = Button(text='Home', size=(40, 40))
+    btn2 = Button(text='Exit', size=(40, 40))
+    layout = BoxLayout()
+    layout.add_widget(btn1)
+    layout.add_widget(btn2)
+    content.add_widget(layout)
+    popup = Popup(title=title, content=content,
+                  auto_dismiss=False, size=(100, 40))
+    btn1.bind(on_release=popup.dismiss)
+    btn2.bind(on_release=exit_button)
+    popup.open()
+
+
 class Notify:
     def __init__(self):
         pass
@@ -163,9 +186,11 @@ class Notify:
             print new_board.get_tile(best_move.get_destination_coordinate()). \
                 get_pieces().get_chess_coordinate(best_move.string()) + \
                 player.get_player_checks()
+            if player.get_player_checks() == "#":
+                dialog_box('Game Over!', 'You are in Checkmate')
             return new_board
         else:
-            print 'Game ends'
+            dialog_box('Game Over!', 'AI is in Checkmate')
             return board
 
 
@@ -329,8 +354,12 @@ class TilePanel(Button):
                                 player.get_player_checks()
                             if alliance == Alliance.WHITE:
                                 alliance = Alliance.BLACK
+                                if player.get_player_checks() == "#":
+                                    dialog_box('Game Over!', 'Black Player is in Checkmate')
                             else:
                                 alliance = Alliance.WHITE
+                                if player.get_player_checks() == "#":
+                                    dialog_box('Game Over!', 'White Player is in Checkmate')
                     else:
                         self.set_color(0.686, 0.109, 0.109, 1)
 
@@ -523,7 +552,7 @@ class MainScreenButton(Button):
         else:
             whiteAI = Notify()
             blackAI = Notify()
-            Clock.schedule_interval(self.AIcallback, 3)
+            # Clock.schedule_interval(self.AIcallback, 3)
         board_log.add(board)
         self.parent.change_screen()
 
@@ -594,6 +623,11 @@ class ScreenManagement(ScreenManager):
 
 
 class Table(App):
+
+    def __init__(self, **kwargs):
+        super(Table, self).__init__(**kwargs)
+        self.title = "PCE"
+
     @staticmethod
     def btn_exit():
         exit(0)
