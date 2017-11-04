@@ -6,15 +6,15 @@ GUI currently been made on Kivy framework hence this project has dependency on p
 
 Link : https://www.youtube.com/playlist?list=PLOJzCFLZdG4zk5d-1_ah2B4kqZSeIlWtt
 
-Second screen of the game
+Game screen
 
 ![alt text](https://raw.githubusercontent.com/arkitpatel/MyChessEngine/master/game/images/image1.png)
 
-When player selects a piece
+Normal chessboard orientation corrected
 
 ![alt text](https://raw.githubusercontent.com/arkitpatel/MyChessEngine/master/game/images/image2.png)
 
-Special move such as castling can be also done
+Minimax Algorithm in action
 
 
 ![alt text](https://raw.githubusercontent.com/arkitpatel/MyChessEngine/master/game/images/image3.png)
